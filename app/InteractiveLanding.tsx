@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Lenis from "lenis";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { useTheme } from "next-themes";
 import {
   Download,
@@ -18,6 +18,8 @@ import {
   EyeOff,
   Database,
 } from "lucide-react";
+import { SiReact, SiNodedotjs, SiPython, SiRust, SiDotnet, SiFlutter } from "react-icons/si";
+import { FaJava } from "react-icons/fa";
 
 // --- Data ---
 
@@ -116,13 +118,99 @@ function Noise() {
   return <div className="noise-overlay" aria-hidden="true" />;
 }
 
-function AmbientOrbs() {
+function NetworkBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+    const dpr = window.devicePixelRatio || 1;
+
+    const nodes: { x: number; y: number; vx: number; vy: number; r: number }[] = [];
+    const NODE_COUNT = 60;
+    const CONNECTION_DIST = 220;
+
+    function resize() {
+      canvas!.width = window.innerWidth * dpr;
+      canvas!.height = window.innerHeight * dpr;
+      canvas!.style.width = window.innerWidth + "px";
+      canvas!.style.height = window.innerHeight + "px";
+      ctx!.scale(dpr, dpr);
+    }
+
+    function seed() {
+      nodes.length = 0;
+      for (let i = 0; i < NODE_COUNT; i++) {
+        nodes.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          r: Math.random() * 2 + 1,
+        });
+      }
+    }
+
+    function draw() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      ctx!.clearRect(0, 0, w, h);
+
+      // edges
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONNECTION_DIST) {
+            const alpha = (1 - dist / CONNECTION_DIST) * 0.45;
+            ctx!.strokeStyle = `rgba(255, 107, 0, ${alpha})`;
+            ctx!.lineWidth = 1;
+            ctx!.beginPath();
+            ctx!.moveTo(nodes[i].x, nodes[i].y);
+            ctx!.lineTo(nodes[j].x, nodes[j].y);
+            ctx!.stroke();
+          }
+        }
+      }
+
+      // nodes
+      for (const node of nodes) {
+        node.x += node.vx;
+        node.y += node.vy;
+        if (node.x < 0 || node.x > w) node.vx *= -1;
+        if (node.y < 0 || node.y > h) node.vy *= -1;
+
+        ctx!.beginPath();
+        ctx!.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+        ctx!.fillStyle = "rgba(255, 107, 0, 0.5)";
+        ctx!.fill();
+      }
+
+      animId = requestAnimationFrame(draw);
+    }
+
+    resize();
+    seed();
+    draw();
+    window.addEventListener("resize", () => { resize(); seed(); });
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
   return (
-    <div className="ambient-orbs" aria-hidden="true">
-      <div className="orb orb-1" />
-      <div className="orb orb-2" />
-      <div className="orb orb-3" />
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="network-bg"
+      aria-hidden="true"
+    />
   );
 }
 
@@ -190,15 +278,116 @@ function ThemeToggle() {
   );
 }
 
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  return (
+    <motion.div
+      className="scroll-progress"
+      initial={{ y: -10, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
+      style={{ scaleX }}
+    />
+  );
+}
+
+function SpotlightCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const spotlight = cardRef.current?.querySelector(".spotlight") as HTMLElement;
+    if (spotlight) {
+      spotlight.style.background = `radial-gradient(300px circle at ${x}px ${y}px, rgba(255, 107, 0, 0.12), transparent 60%)`;
+    }
+  }
+
+  return (
+    <div ref={cardRef} className={`card ${className}`} onMouseMove={handleMouseMove}>
+      <div className="spotlight" />
+      {children}
+    </div>
+  );
+}
+
+const ecosystems = [
+  { name: "React", icon: SiReact, color: "#61DAFB" },
+  { name: "Node", icon: SiNodedotjs, color: "#339933" },
+  { name: "Python", icon: SiPython, color: "#3776AB" },
+  { name: "Rust", icon: SiRust, color: "#DEA584" },
+  { name: "Java", icon: FaJava, color: "#b07219" },
+  { name: ".NET", icon: SiDotnet, color: "#178600" },
+  { name: "Flutter", icon: SiFlutter, color: "#00B4AB" },
+];
+
+function HexBadge({ eco }: { eco: typeof ecosystems[0] }) {
+  const Icon = eco.icon;
+  return (
+    <motion.div className="hex-drop-shadow" variants={fadeUp} style={{ "--eco-color": eco.color } as React.CSSProperties}>
+      <div className="hex-wrap">
+        <div className="hex-content">
+          <Icon className="eco-icon" />
+          <span>{eco.name}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function WorkflowTimeline() {
+  return (
+    <div className="workflow-timeline">
+      {steps.map((step, idx) => (
+        <motion.div
+          key={step.num}
+          className="timeline-item"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+          variants={{
+            hidden: { opacity: 0, x: -20 },
+            visible: { opacity: 1, x: 0, transition: { duration: 0.5, delay: idx * 0.1 } }
+          }}
+        >
+          <div className="timeline-line">
+            <div className="timeline-dot" />
+          </div>
+          <div className="timeline-content">
+            <h4 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px", letterSpacing: "-0.02em" }}>
+              {step.title}
+            </h4>
+            <div className="timeline-meta text-muted">
+              <span className="font-mono" style={{ color: "var(--fg)" }}>STEP {step.num}</span>
+              <span style={{ margin: "0 12px", opacity: 0.5 }}>•</span>
+              <span>{step.body}</span>
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 // --- Main Page ---
 
 export default function InteractiveLanding() {
+
   return (
     <>
       <SmoothScroll />
       <Noise />
-      <AmbientOrbs />
+      <NetworkBackground />
       <IntroLoader />
+      <ScrollProgress />
 
       <main className="site">
         <nav className="nav">
@@ -217,7 +406,7 @@ export default function InteractiveLanding() {
           <motion.div initial="hidden" animate="visible" variants={stagger(0.1)}>
             <motion.h1 variants={cinematicRevealContainer}>
               <div style={{ overflow: "hidden" }}>
-                <motion.span style={{ display: "block" }} variants={cinematicRevealText}>DATAFLOW</motion.span>
+                <motion.span style={{ display: "block" }} variants={cinematicRevealText} className="gradient-text">DATAFLOW</motion.span>
               </div>
               <div style={{ overflow: "hidden" }}>
                 <motion.span style={{ display: "block" }} variants={cinematicRevealText}>VISUALISER</motion.span>
@@ -264,12 +453,12 @@ export default function InteractiveLanding() {
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
-                <div key={feature.num} className="card">
+                <SpotlightCard key={feature.num}>
                   <span className="mono-label">{feature.num}</span>
                   <h3>{feature.title}</h3>
                   <p>{feature.body}</p>
                   <Icon className="icon" size={24} />
-                </div>
+                </SpotlightCard>
               );
             })}
           </motion.div>
@@ -328,18 +517,39 @@ export default function InteractiveLanding() {
           whileInView="visible"
           viewport={{ once: true, margin: "-10%" }}
           variants={stagger()}
+          style={{ maxWidth: "800px", margin: "0 auto 120px auto", padding: "0 24px" }}
         >
-          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)" }}>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "64px", textAlign: "center" }}>
             Workflow
           </motion.h2>
-          <motion.div className="step-grid" variants={stagger()}>
-            {steps.map((step) => (
-              <motion.div key={step.num} className="step-item" variants={fadeUp}>
-                <span className="step-number font-light">{step.num}</span>
-                <h4 style={{ fontSize: "24px" }}>{step.title}</h4>
-                <p className="text-muted">{step.body}</p>
-              </motion.div>
-            ))}
+
+          <WorkflowTimeline />
+        </motion.section>
+
+        {/* SUPPORTED ECOSYSTEMS */}
+        <motion.section
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+          variants={stagger()}
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", marginBottom: "120px" }}
+        >
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "16px" }}>
+            Supported ecosystems.
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-muted" style={{ fontSize: "18px", maxWidth: "600px" }}>
+            First-class support for the frameworks and languages your team already uses.
+          </motion.p>
+          <motion.div className="honeycomb-container" variants={stagger()}>
+            <div className="hex-row">
+              {ecosystems.slice(0, 2).map((eco) => <HexBadge key={eco.name} eco={eco} />)}
+            </div>
+            <div className="hex-row">
+              {ecosystems.slice(2, 5).map((eco) => <HexBadge key={eco.name} eco={eco} />)}
+            </div>
+            <div className="hex-row">
+              {ecosystems.slice(5, 7).map((eco) => <HexBadge key={eco.name} eco={eco} />)}
+            </div>
           </motion.div>
         </motion.section>
 
@@ -456,14 +666,15 @@ export default function InteractiveLanding() {
 
         {/* FOOTER */}
         <footer className="footer">
-          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
             <strong style={{ color: "var(--fg)" }}>DV</strong>
-            <span>MIT Licensed</span>
+            <span className="built-with">Built with Tauri + React</span>
           </div>
           <div className="footer-nav">
             <a href="#">Top</a>
             <a href="#engine">Engine</a>
             <a href="#download">Download</a>
+            <a href="https://github.com/Stewy8506/Repository-Visualiser" target="_blank" rel="noopener noreferrer" className="github-star">★ Star on GitHub</a>
           </div>
         </footer>
       </main>
