@@ -21,11 +21,11 @@ export function Download() {
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
     >
-      <motion.h2 variants={fadeUp as any}>
+      <motion.h2 variants={fadeUp}>
         Download<br /><span className="font-light">the app.</span>
       </motion.h2>
 
-      <motion.div className="download-meta" variants={fadeUp as any}>
+      <motion.div className="download-meta" variants={fadeUp}>
         {details.map((item, i) => (
           <div key={i} className="meta-item">
             <span className="mono-label text-muted">{item.label}</span>
@@ -34,7 +34,7 @@ export function Download() {
         ))}
       </motion.div>
 
-      <motion.div className="actions" style={{ justifyContent: "center" }} variants={fadeUp as any}>
+      <motion.div className="actions" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }} variants={fadeUp}>
         <MagneticButton>
           <a href={primaryDownload.url} className="btn primary">
             <DownloadIcon size={16} /> {primaryDownload.label}
@@ -47,7 +47,7 @@ export function Download() {
         </MagneticButton>
       </motion.div>
 
-      <motion.div className="changelog-list" variants={fadeUp as any}>
+      <motion.div className="changelog-list" variants={fadeUp}>
         <h4>What's in 1.0.0</h4>
         <ul>
           {CHANGELOG.map((item, i) => (

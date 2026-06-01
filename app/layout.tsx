@@ -41,6 +41,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "Dataflow Visualiser",
+              "operatingSystem": "macOS, Windows, Linux",
+              "applicationCategory": "DeveloperApplication",
+              "description": "A high-performance native desktop tool for indexing, visualizing, and analyzing local codebases with blast-radius simulation.",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              }
+            })
+          }}
+        />
+      </head>
       <body className={`${sans.variable} ${inter.variable}`}>
         <ThemeProvider
           attribute="class"

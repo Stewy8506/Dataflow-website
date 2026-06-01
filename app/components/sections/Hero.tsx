@@ -14,16 +14,16 @@ export function Hero() {
       <motion.div initial="hidden" animate="visible" variants={stagger(0.1)}>
         <motion.h1 variants={cinematicRevealContainer}>
           <div style={{ overflow: "hidden" }}>
-            <motion.span style={{ display: "block" }} variants={cinematicRevealText as any} className="gradient-text">DATAFLOW</motion.span>
+            <motion.span style={{ display: "block" }} variants={cinematicRevealText} className="gradient-text">DATAFLOW</motion.span>
           </div>
           <div style={{ overflow: "hidden" }}>
-            <motion.span style={{ display: "block" }} variants={cinematicRevealText as any}>VISUALISER</motion.span>
+            <motion.span style={{ display: "block" }} variants={cinematicRevealText}>VISUALISER</motion.span>
           </div>
         </motion.h1>
-        <motion.p className="tagline font-light" variants={fadeUp as any}>
+        <motion.p className="tagline font-light" variants={fadeUp}>
           A high-performance native desktop tool for indexing, visualizing, and analyzing local codebases with blast-radius simulation.
         </motion.p>
-        <motion.div className="actions" variants={fadeUp as any}>
+        <motion.div className="actions" variants={fadeUp}>
           <MagneticButton>
             <a href={primaryDownload.url} className="btn primary">
               Download for {platform === "mac" ? "Mac" : platform === "linux" ? "Linux" : "Windows"}

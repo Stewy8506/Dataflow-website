@@ -13,7 +13,7 @@ export function Engine() {
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
     >
-      <motion.div className="engine-panel" variants={fadeUp as any}>
+      <motion.div className="engine-panel" variants={fadeUp}>
         <h2>Built with Rust.<br /><span className="font-light">Rendered in React.</span></h2>
         <p style={{ maxWidth: "600px", fontSize: "18px", opacity: 0.8 }}>
           Dataflow Visualiser strictly separates the sandboxed UI layer from the native systems engine, communicating over a low-latency IPC bridge.

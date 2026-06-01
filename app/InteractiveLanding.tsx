@@ -1,5 +1,3 @@
-"use client";
-
 import { SmoothScroll } from "./components/ui/SmoothScroll";
 import { Noise } from "./components/ui/Noise";
 import { NetworkBackground } from "./components/ui/NetworkBackground";

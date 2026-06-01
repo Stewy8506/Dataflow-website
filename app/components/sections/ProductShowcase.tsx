@@ -16,11 +16,11 @@ export function ProductShowcase() {
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
     >
-      <motion.h2 variants={fadeUp as any} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "24px" }}>
+      <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "24px" }}>
         Understand the structure<br />before you break it.
       </motion.h2>
 
-      <motion.div className="card-grid" variants={fadeUp as any}>
+      <motion.div className="card-grid" variants={fadeUp}>
         {FEATURES.map((feature) => {
           const Icon = feature.icon;
           return (
@@ -34,7 +34,7 @@ export function ProductShowcase() {
         })}
       </motion.div>
 
-      <motion.div className="graph-container" variants={fadeUp as any}>
+      <motion.div className="graph-container" variants={fadeUp}>
         <GraphPreview />
       </motion.div>
     </motion.section>

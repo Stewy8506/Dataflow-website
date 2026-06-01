@@ -52,7 +52,7 @@ export function Workflow() {
       variants={stagger()}
       style={{ maxWidth: "800px", margin: "0 auto 120px auto", padding: "0 24px" }}
     >
-      <motion.h2 variants={fadeUp as any} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "64px", textAlign: "center" }}>
+      <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "64px", textAlign: "center" }}>
         Workflow
       </motion.h2>
 
