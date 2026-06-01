@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cinematicRevealContainer, cinematicRevealText, fadeUp, stagger } from "../ui/animations";
-
-const primaryDownload = "/downloads/dataflow-visualiser_1.0.0_x64-setup.exe";
+import { PRIMARY_DOWNLOAD } from "../../data/content";
 
 export function Hero() {
   return (
@@ -21,7 +20,7 @@ export function Hero() {
           A high-performance native desktop tool for indexing, visualizing, and analyzing local codebases with blast-radius simulation.
         </motion.p>
         <motion.div className="actions" variants={fadeUp as any}>
-          <a href={primaryDownload} className="btn primary">
+          <a href={PRIMARY_DOWNLOAD} className="btn primary">
             Download for Windows
           </a>
           <span className="mono-label text-muted">V1.0.0</span>

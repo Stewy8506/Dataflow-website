@@ -2,14 +2,7 @@
 
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../ui/animations";
-
-const steps = [
-  { num: "1", title: "Select", body: "Pick a local directory via the native OS picker." },
-  { num: "2", title: "Index", body: "Rust builds the AST dependency graph and streams it to WebGL." },
-  { num: "3", title: "Simulate", body: "Select a node to run blast-radius DFS and preview breaks." },
-  { num: "4", title: "Enrich", body: "Ask the AI to map semantic domains or explain logic." },
-  { num: "5", title: "Refactor", body: "Have the AI rewrite files and apply them to disk." },
-];
+import { WORKFLOW_STEPS } from "../../data/content";
 
 function WorkflowTimeline() {
   const dotVariants = {
@@ -19,7 +12,7 @@ function WorkflowTimeline() {
 
   return (
     <div className="workflow-timeline">
-      {steps.map((step) => (
+      {WORKFLOW_STEPS.map((step) => (
         <motion.div
           key={step.num}
           className="timeline-item"

@@ -16,7 +16,18 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Dataflow Visualiser",
-  description: "Dataflow Visualiser. Native architecture console.",
+  description: "A high-performance native desktop tool for indexing, visualizing, and analyzing local codebases with blast-radius simulation.",
+  openGraph: {
+    title: "Dataflow Visualiser",
+    description: "Understand the structure before you break it. Native-speed parsing and interactive WebGL canvas.",
+    type: "website",
+    url: "https://dataflow-visualiser.dev",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dataflow Visualiser",
+    description: "Understand the structure before you break it.",
+  },
 };
 
 export default function RootLayout({

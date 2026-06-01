@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../ui/animations";
+import { TerminalDemo } from "../ui/TerminalDemo";
 
 export function Engine() {
   return (
@@ -31,6 +32,8 @@ export function Engine() {
             <p>Explicit filesystem boundaries</p>
           </div>
         </div>
+        
+        <TerminalDemo />
       </motion.div>
     </motion.section>
   );

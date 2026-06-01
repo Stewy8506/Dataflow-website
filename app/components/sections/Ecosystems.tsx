@@ -3,18 +3,7 @@
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../ui/animations";
 import { HexBadge } from "../ui/HexBadge";
-import { SiReact, SiNodedotjs, SiPython, SiRust, SiDotnet, SiFlutter } from "react-icons/si";
-import { FaJava } from "react-icons/fa";
-
-const ecosystems = [
-  { name: "React", icon: SiReact, color: "#61DAFB" },
-  { name: "Node", icon: SiNodedotjs, color: "#339933" },
-  { name: "Python", icon: SiPython, color: "#3776AB" },
-  { name: "Rust", icon: SiRust, color: "#DEA584" },
-  { name: "Java", icon: FaJava, color: "#b07219" },
-  { name: ".NET", icon: SiDotnet, color: "#178600" },
-  { name: "Flutter", icon: SiFlutter, color: "#00B4AB" },
-];
+import { ECOSYSTEMS } from "../../data/content";
 
 export function Ecosystems() {
   return (
@@ -33,13 +22,13 @@ export function Ecosystems() {
       </motion.p>
       <motion.div className="honeycomb-container" variants={stagger()}>
         <div className="hex-row">
-          {ecosystems.slice(0, 2).map((eco) => <HexBadge key={eco.name} eco={eco} />)}
+          {ECOSYSTEMS.slice(0, 2).map((eco) => <HexBadge key={eco.name} eco={eco as any} />)}
         </div>
         <div className="hex-row">
-          {ecosystems.slice(2, 5).map((eco) => <HexBadge key={eco.name} eco={eco} />)}
+          {ECOSYSTEMS.slice(2, 5).map((eco) => <HexBadge key={eco.name} eco={eco as any} />)}
         </div>
         <div className="hex-row">
-          {ecosystems.slice(5, 7).map((eco) => <HexBadge key={eco.name} eco={eco} />)}
+          {ECOSYSTEMS.slice(5, 7).map((eco) => <HexBadge key={eco.name} eco={eco as any} />)}
         </div>
       </motion.div>
     </motion.section>
