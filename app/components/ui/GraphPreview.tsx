@@ -3,7 +3,7 @@ export function GraphPreview() {
     <svg viewBox="0 0 1000 400" role="img" aria-label="Animated dependency graph preview">
       <defs>
         <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--border)" strokeWidth="1" />
         </pattern>
         <filter id="glow">
           <feGaussianBlur stdDeviation="4" result="coloredBlur" />
@@ -37,12 +37,12 @@ export function GraphPreview() {
       </circle>
 
       {/* Nodes */}
-      <circle cx="150" cy="200" r="12" fill="#111" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-      <circle cx="500" cy="200" r="24" fill="#111" stroke="var(--accent)" strokeWidth="3" filter="url(#glow)">
+      <circle cx="150" cy="200" r="12" fill="var(--bg)" stroke="var(--border)" strokeWidth="2" />
+      <circle cx="500" cy="200" r="24" fill="var(--bg)" stroke="var(--accent)" strokeWidth="3" filter="url(#glow)">
         <animate attributeName="r" values="24;28;24" dur="2s" repeatCount="indefinite" />
       </circle>
-      <circle cx="850" cy="150" r="16" fill="#111" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-      <circle cx="850" cy="250" r="16" fill="#111" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
+      <circle cx="850" cy="150" r="16" fill="var(--bg)" stroke="var(--border)" strokeWidth="2" />
+      <circle cx="850" cy="250" r="16" fill="var(--bg)" stroke="var(--border)" strokeWidth="2" />
     </svg>
   );
 }

@@ -2,9 +2,20 @@ import { Zap, Network, Radar, Bot, Code2, Terminal } from "lucide-react";
 import { SiReact, SiNodedotjs, SiPython, SiRust, SiDotnet, SiFlutter } from "react-icons/si";
 import { FaJava } from "react-icons/fa";
 
-export const PRIMARY_DOWNLOAD = "/downloads/dataflow-visualiser_1.0.0_x64-setup.exe";
-export const MSI_DOWNLOAD = "/downloads/dataflow-visualiser_1.0.0_x64_en-US.msi";
-
+export const DOWNLOADS = {
+  windows: {
+    primary: { url: "/downloads/dataflow-visualiser_1.0.0_x64-setup.exe", label: "Windows Setup" },
+    secondary: { url: "/downloads/dataflow-visualiser_1.0.0_x64_en-US.msi", label: "MSI Package" }
+  },
+  mac: {
+    primary: { url: "/downloads/dataflow-visualiser_1.0.0_universal.dmg", label: "macOS DMG" },
+    secondary: { url: "/downloads/dataflow-visualiser_1.0.0_universal.pkg", label: "macOS PKG" }
+  },
+  linux: {
+    primary: { url: "/downloads/dataflow-visualiser_1.0.0_amd64.AppImage", label: "AppImage" },
+    secondary: { url: "/downloads/dataflow-visualiser_1.0.0_amd64.deb", label: "Debian Package" }
+  }
+};
 export const STACK_ITEMS = ["Rust", "Tauri v2", "React 19", "WebGL", "oxc-parser", "Tree-Sitter", "Gemini API", "Local LLMs", "TypeScript"];
 
 export const FEATURES = [
@@ -34,13 +45,29 @@ export const ECOSYSTEMS = [
   { name: "Flutter", icon: SiFlutter, color: "#00B4AB" },
 ];
 
-export const RELEASE_DETAILS = [
-  { label: "Version", value: "1.0.0" },
-  { label: "Platform", value: "Windows x64" },
-  { label: "Setup EXE", value: "3.8 MB" },
-  { label: "MSI package", value: "5.2 MB" },
-  { label: "Released", value: "May 29, 2026" },
-];
+export const RELEASE_DETAILS: Record<string, { label: string; value: string }[]> = {
+  windows: [
+    { label: "Version", value: "1.0.0" },
+    { label: "Platform", value: "Windows x64" },
+    { label: "Setup EXE", value: "3.8 MB" },
+    { label: "MSI package", value: "5.2 MB" },
+    { label: "Released", value: "May 29, 2026" },
+  ],
+  mac: [
+    { label: "Version", value: "1.0.0" },
+    { label: "Platform", value: "macOS Universal" },
+    { label: "DMG image", value: "8.4 MB" },
+    { label: "PKG installer", value: "9.1 MB" },
+    { label: "Released", value: "May 29, 2026" },
+  ],
+  linux: [
+    { label: "Version", value: "1.0.0" },
+    { label: "Platform", value: "Linux x64" },
+    { label: "AppImage", value: "12.6 MB" },
+    { label: "Debian pkg", value: "6.3 MB" },
+    { label: "Released", value: "May 29, 2026" },
+  ]
+};
 
 export const CHANGELOG = [
   "Tauri desktop bundles for Windows x64",

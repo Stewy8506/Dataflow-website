@@ -3,9 +3,15 @@
 import { motion } from "framer-motion";
 import { Download as DownloadIcon } from "lucide-react";
 import { fadeUp, stagger } from "../ui/animations";
-import { PRIMARY_DOWNLOAD, MSI_DOWNLOAD, RELEASE_DETAILS, CHANGELOG } from "../../data/content";
+import { DOWNLOADS, RELEASE_DETAILS, CHANGELOG } from "../../data/content";
+import { MagneticButton } from "../ui/MagneticButton";
+import { usePlatform } from "../../hooks/usePlatform";
 
 export function Download() {
+  const platform = usePlatform();
+  const primaryDownload = DOWNLOADS[platform].primary;
+  const secondaryDownload = DOWNLOADS[platform].secondary;
+  const details = RELEASE_DETAILS[platform];
   return (
     <motion.section
       id="download"
@@ -20,21 +26,25 @@ export function Download() {
       </motion.h2>
 
       <motion.div className="download-meta" variants={fadeUp as any}>
-        {RELEASE_DETAILS.map((detail) => (
-          <div key={detail.label} className="meta-item">
-            <span className="mono-label text-muted">{detail.label}</span>
-            <span className="val">{detail.value}</span>
+        {details.map((item, i) => (
+          <div key={i} className="meta-item">
+            <span className="mono-label text-muted">{item.label}</span>
+            <span className="val">{item.value}</span>
           </div>
         ))}
       </motion.div>
 
       <motion.div className="actions" style={{ justifyContent: "center" }} variants={fadeUp as any}>
-        <a href={PRIMARY_DOWNLOAD} className="btn primary">
-          <DownloadIcon size={16} /> Windows Setup
-        </a>
-        <a href={MSI_DOWNLOAD} className="btn secondary">
-          MSI Package
-        </a>
+        <MagneticButton>
+          <a href={primaryDownload.url} className="btn primary">
+            <DownloadIcon size={16} /> {primaryDownload.label}
+          </a>
+        </MagneticButton>
+        <MagneticButton>
+          <a href={secondaryDownload.url} className="btn secondary">
+            {secondaryDownload.label}
+          </a>
+        </MagneticButton>
       </motion.div>
 
       <motion.div className="changelog-list" variants={fadeUp as any}>

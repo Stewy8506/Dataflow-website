@@ -7,11 +7,15 @@ import { ThemeProvider } from "./components/ThemeProvider";
 const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-light",
+  weight: ["300", "400"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {

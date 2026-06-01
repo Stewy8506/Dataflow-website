@@ -12,7 +12,7 @@ export function Ecosystems() {
       whileInView="visible"
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
-      style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", marginBottom: "120px" }}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
     >
       <motion.h2 variants={fadeUp as any} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "16px" }}>
         Supported ecosystems.

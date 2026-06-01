@@ -2,9 +2,13 @@
 
 import { motion } from "framer-motion";
 import { cinematicRevealContainer, cinematicRevealText, fadeUp, stagger } from "../ui/animations";
-import { PRIMARY_DOWNLOAD } from "../../data/content";
+import { DOWNLOADS } from "../../data/content";
+import { MagneticButton } from "../ui/MagneticButton";
+import { usePlatform } from "../../hooks/usePlatform";
 
 export function Hero() {
+  const platform = usePlatform();
+  const primaryDownload = DOWNLOADS[platform].primary;
   return (
     <section className="hero">
       <motion.div initial="hidden" animate="visible" variants={stagger(0.1)}>
@@ -20,9 +24,11 @@ export function Hero() {
           A high-performance native desktop tool for indexing, visualizing, and analyzing local codebases with blast-radius simulation.
         </motion.p>
         <motion.div className="actions" variants={fadeUp as any}>
-          <a href={PRIMARY_DOWNLOAD} className="btn primary">
-            Download for Windows
-          </a>
+          <MagneticButton>
+            <a href={primaryDownload.url} className="btn primary">
+              Download for {platform === "mac" ? "Mac" : platform === "linux" ? "Linux" : "Windows"}
+            </a>
+          </MagneticButton>
           <span className="mono-label text-muted">V1.0.0</span>
         </motion.div>
       </motion.div>
