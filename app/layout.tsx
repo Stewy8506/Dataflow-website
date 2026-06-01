@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
-import { Sora, Outfit } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 
 import { ThemeProvider } from "./components/ThemeProvider";
 
-const sora = Sora({
+const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
-  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const outfit = Outfit({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-light",
-  weight: ["300", "400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${sora.variable} ${outfit.variable}`}>
+      <body className={`${sans.variable} ${inter.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

@@ -12,6 +12,11 @@ import {
   Bot,
   ShieldCheck,
   Lock,
+  Zap,
+  Code2,
+  Terminal,
+  EyeOff,
+  Database,
 } from "lucide-react";
 
 // --- Data ---
@@ -19,33 +24,53 @@ import {
 const primaryDownload = "/downloads/dataflow-visualiser_1.0.0_x64-setup.exe";
 const msiDownload = "/downloads/dataflow-visualiser_1.0.0_x64_en-US.msi";
 
-const stack = ["TypeScript", "Rust", "React", "Python", "Go", "Java", "C++", "Dart", "Kotlin", "Swift", "Ruby"];
+const stack = ["Rust", "Tauri v2", "React 19", "WebGL", "oxc-parser", "Tree-Sitter", "Gemini API", "Local LLMs", "TypeScript"];
 
 const features = [
   {
     num: "01",
-    title: "Graph Terrain",
-    body: "2D and 3D dependency views reveal folders, edges, and implicit framework relationships.",
-    icon: Network,
+    title: "Native-Speed Parsing",
+    body: "Uses oxc-parser and Tree-Sitter in Rust to scan thousands of files per second without blocking the main thread.",
+    icon: Zap,
   },
   {
     num: "02",
-    title: "Blast Radius",
-    body: "Preview the damage before the refactor. Trace downstream paths with risk coloring.",
-    icon: Radar,
+    title: "Interactive Canvas",
+    body: "WebGL-powered 2D and 3D force-directed graphs with smart dynamic handle routing and directory clustering.",
+    icon: Network,
   },
   {
     num: "03",
-    title: "Codebase Memory",
-    body: "Use Gemini or local OpenAI-compatible providers to ask questions inside the architecture.",
+    title: "Blast-Radius Analytics",
+    body: "Simulate structural changes and instantly see the downstream propagation path color-coded by breaking risk.",
+    icon: Radar,
+  },
+  {
+    num: "04",
+    title: "Deep AI Engine",
+    body: "Automated semantic domain mapping, executable refactoring, and interactive file-scoped Q&A via Gemini or local LLMs.",
     icon: Bot,
+  },
+  {
+    num: "05",
+    title: "Advanced Analysis",
+    body: "Dead code detection, circular dependency tracking, and complexity heatmaps across your entire workspace.",
+    icon: Code2,
+  },
+  {
+    num: "06",
+    title: "Deep IDE Integration",
+    body: "Fully integrated PTY terminal. Open any node directly in VS Code, Cursor, WebStorm, IntelliJ, or Neovim.",
+    icon: Terminal,
   },
 ];
 
 const steps = [
-  { num: "1", title: "Open a repo", body: "Pick a local workspace." },
-  { num: "2", title: "Index the graph", body: "Rust extracts relationships fast." },
-  { num: "3", title: "Inspect risk", body: "Filter, diff, ask AI, export." },
+  { num: "1", title: "Select", body: "Pick a local directory via the native OS picker." },
+  { num: "2", title: "Index", body: "Rust builds the AST dependency graph and streams it to WebGL." },
+  { num: "3", title: "Simulate", body: "Select a node to run blast-radius DFS and preview breaks." },
+  { num: "4", title: "Enrich", body: "Ask the AI to map semantic domains or explain logic." },
+  { num: "5", title: "Refactor", body: "Have the AI rewrite files and apply them to disk." },
 ];
 
 const releaseDetails = [
@@ -153,9 +178,9 @@ function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div style={{ width: 16 }} />;
-  
+
   return (
-    <button 
+    <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       style={{ background: "none", border: "none", cursor: "pointer", color: "var(--fg)" }}
       aria-label="Toggle theme"
@@ -199,7 +224,7 @@ export default function InteractiveLanding() {
               </div>
             </motion.h1>
             <motion.p className="tagline font-light" variants={fadeUp}>
-              See your codebase. All of it.
+              A high-performance native desktop tool for indexing, visualizing, and analyzing local codebases with blast-radius simulation.
             </motion.p>
             <motion.div className="actions" variants={fadeUp}>
               <a href={primaryDownload} className="btn primary">
@@ -224,7 +249,7 @@ export default function InteractiveLanding() {
         </section>
 
         {/* PRODUCT SHOWCASE */}
-        <motion.section 
+        <motion.section
           id="product"
           initial="hidden"
           whileInView="visible"
@@ -232,9 +257,9 @@ export default function InteractiveLanding() {
           variants={stagger()}
         >
           <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "24px" }}>
-            Understand the structure<br/>before you break it.
+            Understand the structure<br />before you break it.
           </motion.h2>
-          
+
           <motion.div className="card-grid" variants={fadeUp}>
             {features.map((feature) => {
               const Icon = feature.icon;
@@ -250,29 +275,55 @@ export default function InteractiveLanding() {
           </motion.div>
 
           <motion.div className="graph-container" variants={fadeUp}>
-            <svg viewBox="0 0 760 300" role="img" aria-label="Animated dependency graph preview">
-              <path id="p1" className="edge" d="M100 150 C 250 50, 400 250, 600 150" />
-              <path id="p2" className="edge" d="M100 150 C 300 250, 500 50, 600 150" />
-              <path id="p3" className="edge" d="M350 150 C 450 100, 500 200, 600 150" />
-              
-              <circle className="dataPulse" r="4">
-                <animateMotion dur="4s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion>
+            <svg viewBox="0 0 1000 400" role="img" aria-label="Animated dependency graph preview">
+              <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                </pattern>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <rect width="100%" height="100%" fill="url(#grid)" />
+
+              {/* Edges */}
+              <path id="e1" className="edge" d="M150,200 C300,100 400,200 500,200" strokeWidth="1.5" />
+              <path id="e2" className="edge" d="M150,200 C250,300 400,300 500,200" strokeWidth="1.5" />
+              <path id="e3" className="edge" d="M500,200 C650,200 700,100 850,150" strokeWidth="1.5" />
+              <path id="e4" className="edge" d="M500,200 C600,350 750,300 850,250" strokeWidth="1.5" />
+
+              {/* Pulses */}
+              <circle r="4" fill="var(--accent)" filter="url(#glow)">
+                <animateMotion dur="3s" repeatCount="indefinite"><mpath href="#e1" /></animateMotion>
               </circle>
-              <circle className="dataPulse" r="4">
-                <animateMotion dur="5s" repeatCount="indefinite" begin="-2s"><mpath href="#p2"/></animateMotion>
+              <circle r="4" fill="var(--accent)" filter="url(#glow)">
+                <animateMotion dur="4s" repeatCount="indefinite" begin="1s"><mpath href="#e2" /></animateMotion>
               </circle>
-              
-              <g className="nodes">
-                <circle cx="100" cy="150" r="16" />
-                <circle cx="350" cy="150" r="24" />
-                <circle cx="600" cy="150" r="20" />
-              </g>
+              <circle r="4" fill="#00ffcc" filter="url(#glow)">
+                <animateMotion dur="3.5s" repeatCount="indefinite" begin="0.5s"><mpath href="#e3" /></animateMotion>
+              </circle>
+              <circle r="4" fill="#ff4060" filter="url(#glow)">
+                <animateMotion dur="2.5s" repeatCount="indefinite" begin="1.5s"><mpath href="#e4" /></animateMotion>
+              </circle>
+
+              {/* Nodes */}
+              <circle cx="150" cy="200" r="12" fill="#111" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
+              <circle cx="500" cy="200" r="24" fill="#111" stroke="var(--accent)" strokeWidth="3" filter="url(#glow)">
+                <animate attributeName="r" values="24;28;24" dur="2s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="850" cy="150" r="16" fill="#111" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
+              <circle cx="850" cy="250" r="16" fill="#111" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
             </svg>
           </motion.div>
         </motion.section>
 
         {/* HOW IT WORKS */}
-        <motion.section 
+        <motion.section
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-10%" }}
@@ -293,7 +344,7 @@ export default function InteractiveLanding() {
         </motion.section>
 
         {/* ENGINE */}
-        <motion.section 
+        <motion.section
           id="engine"
           initial="hidden"
           whileInView="visible"
@@ -301,21 +352,21 @@ export default function InteractiveLanding() {
           variants={stagger()}
         >
           <motion.div className="engine-panel" variants={fadeUp}>
-            <h2>Built with Rust.<br/><span className="font-light">Rendered in React.</span></h2>
+            <h2>Built with Rust.<br /><span className="font-light">Rendered in React.</span></h2>
             <p style={{ maxWidth: "600px", fontSize: "18px", opacity: 0.8 }}>
-              Dataflow Visualiser is a desktop architecture console. Rust indexes the repository, React renders the workspace, and the signal layer keeps risk attached to real files.
+              Dataflow Visualiser strictly separates the sandboxed UI layer from the native systems engine, communicating over a low-latency IPC bridge.
             </p>
             <div className="engine-stats">
               <div className="engine-stat">
                 <h4>10-50x</h4>
-                <p>Faster parsing path</p>
+                <p>Faster parsing via oxc-parser</p>
               </div>
               <div className="engine-stat">
-                <h4>Local</h4>
-                <p>Repo-first analysis</p>
+                <h4>100%</h4>
+                <p>Local execution & privacy</p>
               </div>
               <div className="engine-stat">
-                <h4>Tauri</h4>
+                <h4>Tauri v2</h4>
                 <p>Explicit filesystem boundaries</p>
               </div>
             </div>
@@ -323,7 +374,7 @@ export default function InteractiveLanding() {
         </motion.section>
 
         {/* PRIVACY */}
-        <motion.section 
+        <motion.section
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-10%" }}
@@ -332,22 +383,36 @@ export default function InteractiveLanding() {
           <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "40px" }}>
             Privacy by default.
           </motion.h2>
-          <motion.div className="card-grid" style={{ marginTop: 0 }} variants={stagger()}>
-            <motion.div className="card" variants={fadeUp}>
+          <motion.div className="card-grid privacy-grid" style={{ marginTop: 0 }} variants={stagger()}>
+            <motion.div className="card privacy" variants={fadeUp}>
+              <ShieldCheck className="watermark" />
               <ShieldCheck className="icon" style={{ marginTop: 0, marginBottom: "24px" }} size={24} />
               <h3>Local Indexing</h3>
               <p>File access starts from the native directory picker and Tauri capability scopes. No code leaves your machine without consent.</p>
             </motion.div>
-            <motion.div className="card" variants={fadeUp}>
+            <motion.div className="card privacy" variants={fadeUp}>
+              <Lock className="watermark" />
               <Lock className="icon" style={{ marginTop: 0, marginBottom: "24px" }} size={24} />
               <h3>Provider Choice</h3>
               <p>Use Gemini for cloud assistance or Ollama, LM Studio, vLLM, and compatible local APIs to keep all AI requests on-device.</p>
+            </motion.div>
+            <motion.div className="card privacy" variants={fadeUp}>
+              <EyeOff className="watermark" />
+              <EyeOff className="icon" style={{ marginTop: 0, marginBottom: "24px" }} size={24} />
+              <h3>Strict Scopes</h3>
+              <p>Rust backend operations explicitly enforce the Tauri fs_scope(). The execution sandbox rejects access to any unauthorized files.</p>
+            </motion.div>
+            <motion.div className="card privacy" variants={fadeUp}>
+              <Database className="watermark" />
+              <Database className="icon" style={{ marginTop: 0, marginBottom: "24px" }} size={24} />
+              <h3>Offline First</h3>
+              <p>Dataflow Visualiser is designed to run entirely air-gapped. Your codebase history, snapshots, and graph data are stored in a local SQLite journal.</p>
             </motion.div>
           </motion.div>
         </motion.section>
 
         {/* DOWNLOAD */}
-        <motion.section 
+        <motion.section
           id="download"
           className="download-section"
           initial="hidden"
@@ -356,9 +421,9 @@ export default function InteractiveLanding() {
           variants={stagger()}
         >
           <motion.h2 variants={fadeUp}>
-            Download<br/><span className="font-light">the app.</span>
+            Download<br /><span className="font-light">the app.</span>
           </motion.h2>
-          
+
           <motion.div className="download-meta" variants={fadeUp}>
             {releaseDetails.map((detail) => (
               <div key={detail.label} className="meta-item">
