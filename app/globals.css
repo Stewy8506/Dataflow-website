@@ -747,7 +747,6 @@ section {
   width: 100%;
 }
 
-/* Honeycomb Ecosystem Section */
 .honeycomb-container {
   display: flex;
   flex-direction: column;
@@ -830,25 +829,148 @@ section {
   color: #fff;
   z-index: 10000;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
+  transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 
 .intro-loader.done {
-  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-.intro-loader .logo {
-  font-size: 48px;
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 24px;
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 1.2s ease, opacity 1s ease;
+}
+
+.intro-loader.done .loader-content {
+  transform: scale(4);
+  filter: blur(20px);
+  opacity: 0;
+}
+
+.cinematic-text {
+  font-size: clamp(48px, 10vw, 120px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 0;
+  background-image: linear-gradient(to top, var(--accent) var(--progress), rgba(255,255,255,0.05) var(--progress));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .intro-loader .counter {
+  margin-top: 16px;
   font-family: var(--font-mono);
-  font-size: 24px;
+  font-size: 16px;
   letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* --- Mobile Optimizations --- */
+@media (max-width: 768px) {
+  /* Nav */
+  .nav {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 1rem;
+    margin-bottom: 24px;
+  }
+  .nav .links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Hero */
+  .hero {
+    padding-top: 2vh;
+    align-items: center;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 11vw, 64px);
+    align-items: center;
+    text-align: center;
+    line-height: 0.9;
+  }
+  .tagline {
+    font-size: 16px !important;
+    text-align: center;
+    max-width: 95vw;
+  }
+  .actions {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+  }
+  .btn {
+    width: 100%;
+  }
+
+  /* Engine Panel */
+  .engine-panel {
+    padding: 40px 24px;
+  }
+  .engine-panel h2 {
+    font-size: 32px;
+  }
+  .engine-stats {
+    grid-template-columns: 1fr;
+  }
+
+  /* Workflow Timeline */
+  .timeline-item {
+    gap: 24px;
+    padding-bottom: 48px;
+  }
+  .timeline-content h4 {
+    font-size: 24px !important;
+  }
+
+  /* Honeycomb */
+  .honeycomb-container {
+    transform: scale(0.7);
+    margin-top: 24px;
+  }
+  .hex-row {
+    margin-bottom: -24px; /* compensate for scale */
+  }
+
+  /* Card Grid */
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Download Section */
+  .download-section h2 {
+    font-size: clamp(36px, 10vw, 64px);
+  }
+  .download-meta {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+
+  /* Footer */
+  .footer {
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+  }
+  .footer-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Intro Loader */
+  .cinematic-text {
+    font-size: clamp(40px, 15vw, 80px);
+  }
 }

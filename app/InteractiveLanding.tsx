@@ -237,7 +237,7 @@ function IntroLoader() {
 
   useEffect(() => {
     let start = performance.now();
-    const duration = 1200;
+    const duration = 1600;
 
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
@@ -247,7 +247,7 @@ function IntroLoader() {
       if (progress < 1) {
         requestAnimationFrame(tick);
       } else {
-        setTimeout(() => setDone(true), 200);
+        setTimeout(() => setDone(true), 300);
       }
     };
     requestAnimationFrame(tick);
@@ -255,8 +255,12 @@ function IntroLoader() {
 
   return (
     <div className={`intro-loader ${done ? "done" : ""}`} aria-hidden="true">
-      <div className="logo">DV</div>
-      <div className="counter">{String(count).padStart(3, "0")}</div>
+      <div className="loader-content">
+        <h1 className="cinematic-text" style={{ "--progress": `${count}%` } as React.CSSProperties}>
+          DATAFLOW
+        </h1>
+        <div className="counter">{String(count).padStart(3, "0")}%</div>
+      </div>
     </div>
   );
 }
@@ -344,22 +348,27 @@ function HexBadge({ eco }: { eco: typeof ecosystems[0] }) {
 }
 
 function WorkflowTimeline() {
+  const dotVariants = {
+    dim: { backgroundColor: "var(--border)", boxShadow: "0 0 0px transparent", scale: 1 },
+    lit: { backgroundColor: "var(--accent)", boxShadow: "0 0 16px var(--accent)", scale: 1.2 }
+  };
+
   return (
     <div className="workflow-timeline">
       {steps.map((step, idx) => (
         <motion.div
           key={step.num}
           className="timeline-item"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-10%" }}
+          initial="dim"
+          whileInView="lit"
+          viewport={{ margin: "-45% 0px -45% 0px" }}
           variants={{
-            hidden: { opacity: 0, x: -20 },
-            visible: { opacity: 1, x: 0, transition: { duration: 0.5, delay: idx * 0.1 } }
+            dim: { opacity: 0.3 },
+            lit: { opacity: 1, transition: { duration: 0.4 } }
           }}
         >
           <div className="timeline-line">
-            <div className="timeline-dot" />
+            <motion.div className="timeline-dot" variants={dotVariants} />
           </div>
           <div className="timeline-content">
             <h4 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px", letterSpacing: "-0.02em" }}>
@@ -568,7 +577,7 @@ export default function InteractiveLanding() {
             </p>
             <div className="engine-stats">
               <div className="engine-stat">
-                <h4>10-50x</h4>
+                <h4>40-50x</h4>
                 <p>Faster parsing via oxc-parser</p>
               </div>
               <div className="engine-stat">
