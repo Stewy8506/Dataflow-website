@@ -11,11 +11,13 @@ export function HexBadge({ eco }: { eco: { name: string; icon: IconType; color: 
   };
 
   return (
-    <motion.div className="hex-drop-shadow" variants={fadeUp} style={{ "--eco-color": eco.color } as React.CSSProperties}>
-      <div className="hex-wrap">
-        <div className="hex-content">
-          <Icon className="eco-icon" />
-          <span>{eco.name}</span>
+    <motion.div variants={fadeUp} style={{ "--eco-color": eco.color } as React.CSSProperties}>
+      <div className="hex-drop-shadow">
+        <div className="hex-wrap">
+          <div className="hex-content">
+            <Icon className="eco-icon" />
+            <span style={{ opacity: 1 }}>{eco.name}</span>
+          </div>
         </div>
       </div>
     </motion.div>

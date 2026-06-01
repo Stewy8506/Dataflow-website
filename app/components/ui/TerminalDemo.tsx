@@ -6,7 +6,7 @@ import { Terminal } from "lucide-react";
 
 export function TerminalDemo() {
   return (
-    <motion.div 
+    <motion.div
       className="terminal-demo card"
       style={{ padding: "16px", fontFamily: "monospace", fontSize: "14px", background: "#050505", border: "1px solid var(--border)", borderRadius: "8px", width: "100%", overflow: "hidden", marginTop: "32px", textAlign: "left" }}
     >
@@ -17,10 +17,10 @@ export function TerminalDemo() {
           <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#27c93f" }} />
         </div>
         <div style={{ color: "var(--muted)", display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", marginLeft: "16px" }}>
-          <Terminal size={14} /> AI Engine PTY
+          <Terminal size={14} /> Parser Engine PTY
         </div>
       </div>
-      
+
       <div style={{ color: "var(--fg)", lineHeight: "1.6" }}>
         <span style={{ color: "var(--accent)" }}>~ </span>
         <TypeAnimation
