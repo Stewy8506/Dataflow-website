@@ -9,13 +9,14 @@ import {
   ChevronRight,
   Code2,
   Download,
+  Eye,
+  FileWarning,
   GitBranch,
   Lock,
   Network,
   Radar,
   ShieldCheck,
   TerminalSquare,
-  Workflow,
 } from "lucide-react";
 
 const primaryDownload = "/downloads/dataflow-visualiser_1.0.0_x64-setup.exe";
@@ -28,6 +29,9 @@ const modes = [
     title: "Map a repo like a living system.",
     body: "2D and 3D dependency views reveal folders, edges, imports, external packages, and implicit framework relationships without flattening the codebase into a static report.",
     signal: "1,248 indexed files",
+    graphLabel: "folder clusters + import flow",
+    statA: "2D / 3D",
+    statB: "weighted edges",
     icon: Network,
   },
   {
@@ -36,6 +40,9 @@ const modes = [
     title: "Preview the damage before the refactor.",
     body: "Pick a file and trace downstream paths with risk coloring, health grades, circular dependency markers, churn overlays, snapshots, and diffable graph state.",
     signal: "42 affected nodes",
+    graphLabel: "risk path highlighted",
+    statA: "blast radius",
+    statB: "snapshot diff",
     icon: Radar,
   },
   {
@@ -44,18 +51,50 @@ const modes = [
     title: "Ask questions inside the architecture.",
     body: "Use Gemini or local OpenAI-compatible providers to explain files, group semantic domains, and execute AI-assisted refactor previews on your own machine.",
     signal: "local AI ready",
+    graphLabel: "semantic domains grouped",
+    statA: "file Q&A",
+    statB: "local provider",
     icon: Bot,
   },
 ] as const;
 
 const gallery = [
-  ["Native parser", "Rust, oxc-parser, tree-sitter, Rayon"],
-  ["Signal layer", "cycles, dead exports, CVE badges, health scores"],
-  ["Workflow", "Git timeline, terminal, command palette, snapshots"],
-  ["Privacy", "Tauri capabilities, local indexing, local AI endpoints"],
+  ["Find dead code", "Orphaned files and unused exports are marked directly in the graph instead of buried in reports."],
+  ["Preview refactors", "Select a node and see downstream impact before renaming, moving, or deleting code."],
+  ["Trace React props", "Follow prop-drilling paths through component trees without jumping across tabs."],
+  ["Audit dependencies", "External packages, unused dependencies, and OSV vulnerability badges stay visible on the map."],
 ];
 
 const stack = ["TypeScript", "Rust", "Tauri", "React", "Next.js", "Python", "C/C++", "Dart", "Java", "Go", "CMake"];
+
+const audience = [
+  "Refactoring legacy repositories",
+  "Onboarding into unfamiliar systems",
+  "Reviewing architecture before PRs",
+  "Auditing dependency and Git risk",
+];
+
+const walkthrough = [
+  ["Open a repo", "Pick a local workspace through the native file dialog."],
+  ["Index the graph", "Rust extracts imports, symbols, packages, and framework links."],
+  ["Inspect risk", "Filter, diff, ask AI, export, or stage changes from the same console."],
+];
+
+const releaseDetails = [
+  ["Version", "1.0.0"],
+  ["Platform", "Windows x64"],
+  ["Setup EXE", "3.8 MB"],
+  ["MSI package", "5.2 MB"],
+  ["Released", "May 29, 2026"],
+  ["Signing", "Unsigned local build"],
+];
+
+const changelog = [
+  "Tauri desktop bundles for Windows x64",
+  "2D and 3D dependency map workspace",
+  "Blast-radius preview and graph snapshot diffing",
+  "Gemini and local OpenAI-compatible provider support",
+];
 
 export default function InteractiveLanding() {
   const [activeMode, setActiveMode] = useState<(typeof modes)[number]["key"]>("map");
@@ -76,6 +115,7 @@ export default function InteractiveLanding() {
           <div className="navLinks">
             <a href="#work">WORK</a>
             <a href="#engine">ENGINE</a>
+            <a href="#privacy">PRIVACY</a>
             <a href="#download">DOWNLOAD</a>
           </div>
         </nav>
@@ -88,7 +128,9 @@ export default function InteractiveLanding() {
           </div>
 
           <div className="heroType">
-            <p>Native desktop app for engineers who need to see what breaks before they ship.</p>
+            <p>
+              See dependencies, blast radius, Git volatility, and AI code context in one local-first desktop workspace.
+            </p>
             <h1>
               DATAFLOW
               <br />
@@ -112,6 +154,10 @@ export default function InteractiveLanding() {
               </a>
             </div>
           </div>
+          <div className="heroProof">
+            <span>Built for codebases too large to reason about from tabs alone.</span>
+            <span>Native parsing. Spatial maps. Private by default.</span>
+          </div>
         </section>
 
         <section className="showcase" id="work">
@@ -126,7 +172,7 @@ export default function InteractiveLanding() {
               <span>AI MAP</span>
               <span>GIT</span>
             </aside>
-            <GraphScene activeMode={activeMode} />
+            <GraphScene activeMode={activeMode} graphLabel={mode.graphLabel} />
             <aside className="rightRail">
               <small>{mode.eyebrow}</small>
               <strong>{mode.signal}</strong>
@@ -171,22 +217,84 @@ export default function InteractiveLanding() {
           <div className="modeSignal">
             <ModeIcon size={34} aria-hidden="true" />
             <span>{mode.signal}</span>
+            <small>{mode.statA}</small>
+            <small>{mode.statB}</small>
           </div>
         </section>
 
-        <section className="editorial" id="engine">
-          <div>
-            <p>ABOUT THE ENGINE</p>
-            <h2>
-              It is not a diagram export.
-              <br />
-              It is a working architecture console.
-            </h2>
+        <section className="walkthroughSection" aria-label="Product walkthrough">
+          <div className="walkthroughIntro">
+            <p>DEMO FLOW</p>
+            <h2>From folder to architecture map in three moves.</h2>
           </div>
-          <div className="editorialText">
-            <p>
-              Dataflow Visualiser indexes local repositories through a native systems layer, renders spatial code maps in React, and adds practical engineering signals: blast radius, circular dependencies, unused exports, dependency risk, snapshots, source control, and terminal workflow.
-            </p>
+          <div className="walkthroughGrid">
+            {walkthrough.map(([title, body], index) => (
+              <article key={title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{title}</strong>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="audienceSection" aria-label="Who Dataflow Visualiser is for">
+          <div>
+            <p>FOR ENGINEERS WHO ARE</p>
+            <h2>Changing code they cannot fully hold in their head.</h2>
+          </div>
+          <div className="audienceList">
+            {audience.map((item) => (
+              <span key={item}>
+                <Check size={16} aria-hidden="true" />
+                {item}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="engineSection" id="engine">
+          <div className="engineShell">
+            <div className="engineIntro">
+              <p>ABOUT THE ENGINE</p>
+              <h2>Native analysis for living code maps.</h2>
+              <span>
+                Dataflow Visualiser is a desktop architecture console: Rust indexes the repository, React renders the workspace, and the signal layer keeps risk attached to real files.
+              </span>
+            </div>
+
+            <div className="engineFlow" aria-label="Engine pipeline">
+              <article>
+                <small>01</small>
+                <strong>Rust Core</strong>
+                <span>AST parsing, filesystem traversal, graph construction, and native-speed indexing.</span>
+              </article>
+              <article>
+                <small>02</small>
+                <strong>React Studio</strong>
+                <span>2D and 3D maps, filters, matrix view, inspector, snapshots, and exports.</span>
+              </article>
+              <article>
+                <small>03</small>
+                <strong>Signal Layer</strong>
+                <span>Blast radius, cycles, unused exports, CVE risk, health scores, and Git churn.</span>
+              </article>
+            </div>
+
+            <div className="engineFooter">
+              <span>
+                <b>10-50x</b>
+                faster JS/TS parsing path
+              </span>
+              <span>
+                <b>Local</b>
+                repo-first analysis
+              </span>
+              <span>
+                <b>Tauri</b>
+                explicit filesystem boundaries
+              </span>
+            </div>
           </div>
         </section>
 
@@ -209,14 +317,36 @@ export default function InteractiveLanding() {
           </div>
         </section>
 
+        <section className="privacySection" id="privacy">
+          <div className="privacyCopy">
+            <p>PRIVACY MODEL</p>
+            <h2>Local first, explicit when AI leaves the machine.</h2>
+            <span>
+              Repository indexing happens in the desktop app. Cloud AI is opt-in through your provider key; local AI endpoints keep semantic mapping and Q&A on your own hardware.
+            </span>
+          </div>
+          <div className="privacyCards">
+            <article>
+              <ShieldCheck size={24} />
+              <strong>Local indexing</strong>
+              <p>File access starts from the native directory picker and Tauri capability scopes.</p>
+            </article>
+            <article>
+              <Lock size={24} />
+              <strong>Provider choice</strong>
+              <p>Use Gemini for cloud assistance or Ollama, LM Studio, vLLM, and compatible local APIs.</p>
+            </article>
+          </div>
+        </section>
+
         <section className="trustGrid">
           <div>
-            <ShieldCheck size={24} />
-            <span>Local filesystem scopes</span>
+            <Eye size={24} />
+            <span>Architecture visibility</span>
           </div>
           <div>
-            <Lock size={24} />
-            <span>Local AI providers</span>
+            <FileWarning size={24} />
+            <span>Risk before edits</span>
           </div>
           <div>
             <GitBranch size={24} />
@@ -239,6 +369,14 @@ export default function InteractiveLanding() {
             THE APP.
           </h2>
           <p>The current release artifacts are served directly from this Next.js landing site.</p>
+          <div className="releaseMeta">
+            {releaseDetails.map(([label, value]) => (
+              <span key={label}>
+                <small>{label}</small>
+                <b>{value}</b>
+              </span>
+            ))}
+          </div>
           <div className="downloadActions">
             <a className="button dark" href={primaryDownload} download>
               <Download size={18} />
@@ -249,7 +387,30 @@ export default function InteractiveLanding() {
               Windows MSI package
             </a>
           </div>
+          <div className="changelog">
+            <strong>What is in 1.0.0</strong>
+            {changelog.map((item) => (
+              <span key={item}>
+                <Check size={15} />
+                {item}
+              </span>
+            ))}
+          </div>
         </section>
+
+        <footer className="siteFooter">
+          <div>
+            <span className="brandMark">DV</span>
+            <strong>Dataflow Visualiser</strong>
+          </div>
+          <p>MIT licensed desktop app for local-first codebase dependency analysis.</p>
+          <nav aria-label="Footer">
+            <a href="#top">Top</a>
+            <a href="#work">Preview</a>
+            <a href="#privacy">Privacy</a>
+            <a href="#download">Download</a>
+          </nav>
+        </footer>
       </main>
     </>
   );
@@ -307,12 +468,12 @@ function IntroLoader() {
   );
 }
 
-function GraphScene({ activeMode }: { activeMode: string }) {
+function GraphScene({ activeMode, graphLabel }: { activeMode: string; graphLabel: string }) {
   return (
     <div className={`graphScene ${activeMode}`}>
       <div className="sceneTop">
         <span>workspace / dependency-map</span>
-        <strong>LIVE</strong>
+        <strong>{graphLabel}</strong>
       </div>
       <svg viewBox="0 0 760 500" role="img" aria-label="Animated dependency graph preview">
         <path className="edge e1" d="M104 112 C230 56, 356 74, 542 142" />
