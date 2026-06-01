@@ -1,5 +1,19 @@
 import type { Metadata } from "next";
+import { DM_Sans, Noto_Sans } from "next/font/google";
 import "./globals.css";
+
+
+import { ThemeProvider } from "./components/ThemeProvider";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+});
+
+const quicksand = Noto_Sans({
+  subsets: ["latin"],
+  variable: "--font-quicksand",
+});
 
 export const metadata: Metadata = {
   title: "Dataflow Visualiser | Native Codebase Dependency Maps",
@@ -13,8 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${dmSans.variable} ${quicksand.variable}`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

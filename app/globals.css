@@ -1,16 +1,45 @@
 :root {
-  --paper: #f4f1e8;
-  --paper-2: #e8e2d3;
-  --ink: #10100e;
-  --muted: #6f6a5f;
-  --line: rgba(16, 16, 14, 0.16);
-  --soft: rgba(255, 255, 255, 0.45);
-  --dark: #10100e;
-  --green: #3bc076;
-  --lime: #d7ff68;
-  --blue: #5596ff;
-  --rose: #f35f7c;
-  --amber: #e9a72f;
+  /* Light Mode Toggle */
+  --paper: #fafafa;
+  --paper-2: #f4f4f5;
+  --ink: #09090b;
+  --muted: #71717a;
+  --line: rgba(9, 9, 11, 0.1);
+  --soft: rgba(255, 255, 255, 0.6);
+  --dark: #ffffff;
+  --green: #059669;
+  --lime: #0284c7;
+  --blue: #2563eb;
+  --rose: #e11d48;
+  --amber: #d97706;
+  --shadow-soft: 0 18px 46px rgba(9, 9, 11, 0.04);
+  --shadow-mid: 0 28px 80px rgba(9, 9, 11, 0.08);
+  --shadow-dark: 0 34px 90px rgba(9, 9, 11, 0.12);
+  --shadow-lift: 0 20px 54px rgba(9, 9, 11, 0.08);
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(9, 9, 11, 0.08);
+}
+
+.dark {
+  /* Cyber-Developer Dark Mode Default */
+  --paper: #09090b;
+  --paper-2: #18181b;
+  --ink: #ffffff;
+  --muted: #a1a1aa;
+  --line: rgba(255, 255, 255, 0.1);
+  --soft: rgba(0, 0, 0, 0.45);
+  --dark: #000000;
+  --green: #10b981;
+  --lime: #22d3ee;
+  --blue: #3b82f6;
+  --rose: #f43f5e;
+  --amber: #f59e0b;
+  --shadow-soft: 0 18px 46px rgba(0, 0, 0, 0.4);
+  --shadow-mid: 0 28px 80px rgba(0, 0, 0, 0.6);
+  --shadow-dark: 0 34px 90px rgba(0, 0, 0, 0.8);
+  --shadow-lift: 0 20px 54px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -24,8 +53,13 @@ html {
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans), sans-serif;
   margin: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6, .brand, strong {
+  font-family: var(--font-quicksand), sans-serif;
 }
 
 a {
@@ -40,14 +74,125 @@ button {
 }
 
 .site {
-  background:
-    linear-gradient(rgba(16, 16, 14, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 16, 14, 0.045) 1px, transparent 1px),
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.8), transparent 34rem),
-    var(--paper);
-  background-size: 42px 42px, 42px 42px, auto, auto;
+  background: var(--paper);
   min-height: 100vh;
   overflow: clip;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.dynamicBackground {
+  --pointer-x: 52%;
+  --pointer-y: 18%;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 0;
+}
+
+.backgroundWash {
+  background:
+    radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(34, 211, 238, 0.16), transparent 24rem),
+    linear-gradient(115deg, rgba(16, 185, 129, 0.08), transparent 34%),
+    linear-gradient(245deg, rgba(59, 130, 246, 0.08), transparent 38%);
+  inset: -18%;
+  opacity: 0.9;
+  position: absolute;
+  transition: background 220ms ease-out;
+}
+
+.contourLines {
+  inset: 0;
+  opacity: 0.48;
+  position: absolute;
+}
+
+.contourLines span {
+  animation: contourDrift 16s ease-in-out infinite;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-left-color: transparent;
+  border-radius: 48% 52% 42% 58%;
+  height: clamp(240px, 45vw, 720px);
+  left: calc(50% - 22vw);
+  position: absolute;
+  top: calc(8% + (var(--i, 0) * 7%));
+  transform: rotate(calc(var(--i, 0) * 9deg));
+  width: clamp(360px, 68vw, 980px);
+}
+
+.contourLines span:nth-child(1) { --i: 0; animation-delay: -1s; }
+.contourLines span:nth-child(2) { --i: 1; animation-delay: -3s; }
+.contourLines span:nth-child(3) { --i: 2; animation-delay: -5s; }
+.contourLines span:nth-child(4) { --i: 3; animation-delay: -7s; }
+.contourLines span:nth-child(5) { --i: 4; animation-delay: -9s; }
+.contourLines span:nth-child(6) { --i: 5; animation-delay: -11s; }
+.contourLines span:nth-child(7) { --i: 6; animation-delay: -13s; }
+.contourLines span:nth-child(8) { --i: 7; animation-delay: -15s; }
+.contourLines span:nth-child(9) { --i: 8; animation-delay: -17s; }
+
+.scanRails {
+  inset: 0;
+  opacity: 0.34;
+  position: absolute;
+}
+
+.scanRails span {
+  animation: scanRail 9s linear infinite;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lime) 38%, transparent), transparent);
+  height: 1px;
+  left: -30%;
+  position: absolute;
+  top: calc(16% + var(--rail, 0) * 17%);
+  width: 160%;
+}
+
+.scanRails span:nth-child(1) { --rail: 0; animation-delay: -1s; }
+.scanRails span:nth-child(2) { --rail: 1; animation-delay: -3s; }
+.scanRails span:nth-child(3) { --rail: 2; animation-delay: -5s; }
+.scanRails span:nth-child(4) { --rail: 3; animation-delay: -7s; }
+.scanRails span:nth-child(5) { --rail: 4; animation-delay: -9s; }
+
+.dataStrips {
+  color: color-mix(in srgb, var(--ink) 18%, transparent);
+  display: flex;
+  font-size: clamp(72px, 16vw, 220px);
+  font-weight: 950;
+  gap: 0.18em;
+  left: 50%;
+  letter-spacing: 0;
+  line-height: 0.74;
+  opacity: 0.18;
+  position: absolute;
+  text-transform: uppercase;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  white-space: nowrap;
+}
+
+.dataStrips span {
+  animation: stripShift 18s ease-in-out infinite;
+}
+
+.dataStrips span:nth-child(2) { animation-delay: -4s; }
+.dataStrips span:nth-child(3) { animation-delay: -8s; }
+.dataStrips span:nth-child(4) { animation-delay: -12s; }
+
+.nav,
+.hero,
+.showcase,
+.modeSection,
+.walkthroughSection,
+.audienceSection,
+.engineSection,
+.galleryGrid,
+.stackMarquee,
+.privacySection,
+.trustGrid,
+.downloadSection,
+.siteFooter {
+  position: relative;
+  z-index: 1;
 }
 
 .introLoader {
@@ -124,6 +269,7 @@ button {
   height: 42px;
   justify-content: center;
   letter-spacing: 0;
+  box-shadow: 0 10px 22px rgba(16, 16, 14, 0.16);
   width: 42px;
 }
 
@@ -287,7 +433,9 @@ h3 {
 }
 
 .button {
-  border: 1px solid var(--ink);
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
   border-radius: 999px;
   font-size: 12px;
   font-weight: 950;
@@ -299,16 +447,23 @@ h3 {
   padding: 0 18px;
   position: relative;
   text-transform: uppercase;
-  transition: color 220ms ease, transform 220ms ease, background 220ms ease;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .button:hover {
+  box-shadow: var(--shadow-lift), 0 0 20px rgba(34, 211, 238, 0.2);
   transform: translateY(-2px);
+  border-color: var(--lime);
 }
 
 .button.dark {
-  background: var(--dark);
+  background: var(--ink);
   color: var(--paper);
+  border-color: transparent;
+}
+
+.button.dark:hover {
+  box-shadow: 0 12px 28px rgba(34, 211, 238, 0.3);
 }
 
 .button.light {
@@ -336,6 +491,7 @@ h3 {
   align-items: stretch;
   background: var(--dark);
   border: 1px solid var(--dark);
+  box-shadow: var(--shadow-dark);
   color: var(--paper);
   min-height: clamp(500px, 58vw, 640px);
 }
@@ -594,6 +750,7 @@ h3 {
 .modeSignal {
   align-self: stretch;
   background: var(--dark);
+  box-shadow: var(--shadow-mid);
   color: var(--paper);
   flex-direction: column;
   justify-content: space-between;
@@ -657,12 +814,37 @@ h3 {
 }
 
 .walkthroughGrid article {
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px solid var(--line);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
   min-height: 300px;
   padding: 22px;
+  position: relative;
+  overflow: hidden;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.walkthroughGrid article::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
+.walkthroughGrid article:hover::before {
+  opacity: 1;
+}
+
+.walkthroughGrid article:hover {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-lift), 0 0 30px rgba(34, 211, 238, 0.1);
+  border-color: rgba(34, 211, 238, 0.3);
+  transform: translateY(-5px);
 }
 
 .walkthroughGrid article span {
@@ -705,6 +887,7 @@ h3 {
   align-items: center;
   background: rgba(255, 255, 255, 0.28);
   border: 1px solid var(--line);
+  box-shadow: 0 12px 28px rgba(16, 16, 14, 0.055);
   display: flex;
   font-size: 13px;
   font-weight: 950;
@@ -712,6 +895,13 @@ h3 {
   min-height: 52px;
   padding: 0 14px;
   text-transform: uppercase;
+  transition: box-shadow 200ms ease, transform 200ms ease, background 200ms ease;
+}
+
+.audienceList span:hover {
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: var(--shadow-soft);
+  transform: translateX(4px);
 }
 
 .engineSection {
@@ -726,6 +916,7 @@ h3 {
     radial-gradient(circle at 86% 16%, rgba(59, 192, 118, 0.22), transparent 21rem),
     var(--dark);
   background-size: 36px 36px, 36px 36px, auto, auto;
+  box-shadow: var(--shadow-dark);
   color: var(--paper);
   overflow: hidden;
   padding: clamp(24px, 4vw, 48px);
@@ -771,6 +962,7 @@ h3 {
 .engineFlow article {
   background: rgba(244, 241, 232, 0.075);
   border: 1px solid rgba(244, 241, 232, 0.16);
+  box-shadow: inset 0 1px 0 rgba(244, 241, 232, 0.08), 0 18px 44px rgba(0, 0, 0, 0.14);
   display: flex;
   flex-direction: column;
   min-height: 320px;
@@ -780,6 +972,7 @@ h3 {
 
 .engineFlow article:hover {
   background: rgba(244, 241, 232, 0.12);
+  box-shadow: inset 0 1px 0 rgba(244, 241, 232, 0.12), 0 24px 58px rgba(0, 0, 0, 0.22);
   transform: translateY(-6px);
 }
 
@@ -845,19 +1038,24 @@ h3 {
 }
 
 .galleryCard {
-  background: rgba(255, 255, 255, 0.28);
-  border: 1px solid var(--line);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: clamp(280px, 26vw, 340px);
   padding: 22px;
   position: relative;
-  transition: background 240ms ease, transform 240ms ease;
+  overflow: hidden;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .galleryCard:hover {
-  background: var(--dark);
-  color: var(--paper);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-lift), 0 0 30px rgba(34, 211, 238, 0.1);
+  border-color: rgba(34, 211, 238, 0.3);
+  color: var(--ink);
   transform: translateY(-8px);
 }
 
@@ -950,11 +1148,19 @@ h3 {
 
 .privacyCards article {
   background: var(--dark);
+  box-shadow: var(--shadow-mid);
   color: var(--paper);
   display: flex;
   flex-direction: column;
   min-height: 360px;
   padding: 24px;
+  transition: box-shadow 220ms ease, transform 220ms ease, background 220ms ease;
+}
+
+.privacyCards article:hover {
+  background: #151712;
+  box-shadow: var(--shadow-dark);
+  transform: translateY(-5px);
 }
 
 .privacyCards svg {
@@ -986,11 +1192,19 @@ h3 {
 .trustGrid div {
   border-bottom: 1px solid var(--line);
   border-top: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(16, 16, 14, 0.045);
   flex-direction: column;
   gap: 22px;
   min-height: 180px;
   justify-content: center;
   text-align: center;
+  transition: box-shadow 200ms ease, transform 200ms ease, background 200ms ease;
+}
+
+.trustGrid div:hover {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-4px);
 }
 
 .trustGrid span {
@@ -1043,6 +1257,7 @@ h3 {
 
 .releaseMeta span {
   border: 1px solid rgba(244, 241, 232, 0.18);
+  box-shadow: inset 0 1px 0 rgba(244, 241, 232, 0.08), 0 14px 32px rgba(0, 0, 0, 0.13);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1169,6 +1384,46 @@ h3 {
 @keyframes marquee {
   to {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes contourDrift {
+  0%,
+  100% {
+    transform: translate3d(-2%, 0, 0) rotate(calc(var(--i, 0) * 9deg));
+  }
+
+  50% {
+    transform: translate3d(3%, -2%, 0) rotate(calc(var(--i, 0) * 9deg + 6deg));
+  }
+}
+
+@keyframes scanRail {
+  from {
+    transform: translateX(-18%) skewY(-8deg);
+  }
+
+  to {
+    transform: translateX(18%) skewY(-8deg);
+  }
+}
+
+@keyframes stripShift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-0.08em);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contourLines span,
+  .scanRails span,
+  .dataStrips span {
+    animation: none;
   }
 }
 

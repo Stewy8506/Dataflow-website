@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Lenis from "lenis";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useTheme } from "next-themes";
 import {
   ArrowDownToLine,
   Bot,
@@ -105,6 +107,7 @@ export default function InteractiveLanding() {
     <>
       <SmoothScroll />
       <main className="site">
+        <DynamicBackground />
         <IntroLoader />
 
         <nav className="nav" aria-label="Primary">
@@ -117,10 +120,17 @@ export default function InteractiveLanding() {
             <a href="#engine">ENGINE</a>
             <a href="#privacy">PRIVACY</a>
             <a href="#download">DOWNLOAD</a>
+            <ThemeToggle />
           </div>
         </nav>
 
-        <section className="hero" id="top">
+        <motion.section 
+          className="hero" 
+          id="top"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
           <div className="heroMeta">
             <span>AVAILABLE / WINDOWS X64</span>
             <span>SPECIALIZATION / CODEBASE INTELLIGENCE</span>
@@ -158,7 +168,7 @@ export default function InteractiveLanding() {
             <span>Built for codebases too large to reason about from tabs alone.</span>
             <span>Native parsing. Spatial maps. Private by default.</span>
           </div>
-        </section>
+        </motion.section>
 
         <section className="showcase" id="work">
           <div className="showcaseHeader">
@@ -222,21 +232,24 @@ export default function InteractiveLanding() {
           </div>
         </section>
 
-        <section className="walkthroughSection" aria-label="Product walkthrough">
+        <motion.section 
+          className="walkthroughSection" 
+          aria-label="Product walkthrough"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="walkthroughIntro">
             <p>DEMO FLOW</p>
             <h2>From folder to architecture map in three moves.</h2>
           </div>
           <div className="walkthroughGrid">
             {walkthrough.map(([title, body], index) => (
-              <article key={title}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{title}</strong>
-                <p>{body}</p>
-              </article>
+              <WalkthroughCard key={title} title={title} body={body} index={index} />
             ))}
           </div>
-        </section>
+        </motion.section>
 
         <section className="audienceSection" aria-label="Who Dataflow Visualiser is for">
           <div>
@@ -298,16 +311,33 @@ export default function InteractiveLanding() {
           </div>
         </section>
 
-        <section className="galleryGrid" aria-label="Capability gallery">
+        <motion.section 
+          className="galleryGrid" 
+          aria-label="Capability gallery"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.15 } }
+          }}
+        >
           {gallery.map(([title, body], index) => (
-            <article className="galleryCard" key={title}>
+            <motion.article 
+              className="galleryCard" 
+              key={title}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+              }}
+            >
               <span>{String(index + 1).padStart(2, "0")}</span>
               <h3>{title}</h3>
               <p>{body}</p>
               <ChevronRight size={20} aria-hidden="true" />
-            </article>
+            </motion.article>
           ))}
-        </section>
+        </motion.section>
 
         <section className="stackMarquee" aria-label="Supported stack">
           <div>
@@ -468,6 +498,95 @@ function IntroLoader() {
   );
 }
 
+function DynamicBackground() {
+  const backgroundRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = backgroundRef.current;
+    if (!element) return;
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const x = (event.clientX / window.innerWidth) * 100;
+      const y = (event.clientY / window.innerHeight) * 100;
+      element.style.setProperty("--pointer-x", `${x}%`);
+      element.style.setProperty("--pointer-y", `${y}%`);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    return () => window.removeEventListener("pointermove", handlePointerMove);
+  }, []);
+
+  return (
+    <div className="dynamicBackground" ref={backgroundRef} aria-hidden="true">
+      <div className="backgroundWash" />
+      <div className="contourLines">
+        {Array.from({ length: 9 }).map((_, index) => (
+          <span key={index} />
+        ))}
+      </div>
+      <div className="scanRails">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <span key={index} />
+        ))}
+      </div>
+      <div className="dataStrips">
+        <span>AST</span>
+        <span>GRAPH</span>
+        <span>RISK</span>
+        <span>LOCAL</span>
+      </div>
+    </div>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return <div style={{ width: 24, height: 24 }} />;
+
+  return (
+    <button
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      aria-label="Toggle theme"
+      style={{ background: "transparent", border: "none", display: "flex", alignItems: "center" }}
+    >
+      {theme === "dark" ? <Bot size={18} /> : <Eye size={18} />}
+    </button>
+  );
+}
+
+function WalkthroughCard({ title, body, index }: { title: string; body: string; index: number }) {
+  const cardRef = useRef<HTMLElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  return (
+    <article 
+      ref={cardRef} 
+      onMouseMove={handleMouseMove}
+      style={{
+        '--mouse-x': `${mousePosition.x}px`,
+        '--mouse-y': `${mousePosition.y}px`,
+      } as React.CSSProperties}
+    >
+      <span>{String(index + 1).padStart(2, "0")}</span>
+      <strong>{title}</strong>
+      <p>{body}</p>
+    </article>
+  );
+}
+
 function GraphScene({ activeMode, graphLabel }: { activeMode: string; graphLabel: string }) {
   return (
     <div className={`graphScene ${activeMode}`}>
@@ -476,21 +595,27 @@ function GraphScene({ activeMode, graphLabel }: { activeMode: string; graphLabel
         <strong>{graphLabel}</strong>
       </div>
       <svg viewBox="0 0 760 500" role="img" aria-label="Animated dependency graph preview">
+        <defs>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
         <path className="edge e1" d="M104 112 C230 56, 356 74, 542 142" />
         <path className="edge e2" d="M142 360 C282 232, 428 250, 636 172" />
         <path className="edge e3" d="M206 168 C298 218, 330 368, 512 374" />
         <path className="edge e4" d="M386 116 C452 198, 454 292, 620 342" />
         <path className="edge e5" d="M92 266 C210 310, 276 146, 386 116" />
         <g className="nodes">
-          <circle cx="104" cy="112" r="38" />
-          <circle cx="142" cy="360" r="47" />
-          <circle cx="542" cy="142" r="54" />
-          <circle cx="636" cy="172" r="32" />
-          <circle cx="512" cy="374" r="48" />
-          <circle cx="620" cy="342" r="28" />
-          <circle cx="386" cy="116" r="35" />
-          <circle cx="302" cy="272" r="24" />
-          <circle cx="92" cy="266" r="29" />
+          <circle cx="104" cy="112" r="38" filter="url(#glow)" />
+          <circle cx="142" cy="360" r="47" filter="url(#glow)" />
+          <circle cx="542" cy="142" r="54" filter="url(#glow)" />
+          <circle cx="636" cy="172" r="32" filter="url(#glow)" />
+          <circle cx="512" cy="374" r="48" filter="url(#glow)" />
+          <circle cx="620" cy="342" r="28" filter="url(#glow)" />
+          <circle cx="386" cy="116" r="35" filter="url(#glow)" />
+          <circle cx="302" cy="272" r="24" filter="url(#glow)" />
+          <circle cx="92" cy="266" r="29" filter="url(#glow)" />
         </g>
       </svg>
       <div className="sceneBadge one">UI layer</div>
