@@ -1,94 +1,59 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import Lenis from "lenis";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import {
-  ArrowDownToLine,
-  Bot,
-  Check,
-  ChevronRight,
-  Code2,
   Download,
   Eye,
-  FileWarning,
-  GitBranch,
-  Lock,
-  Network,
   Radar,
+  Network,
+  Bot,
   ShieldCheck,
-  TerminalSquare,
+  Lock,
 } from "lucide-react";
+
+// --- Data ---
 
 const primaryDownload = "/downloads/dataflow-visualiser_1.0.0_x64-setup.exe";
 const msiDownload = "/downloads/dataflow-visualiser_1.0.0_x64_en-US.msi";
 
-const modes = [
+const stack = ["TypeScript", "Rust", "React", "Python", "Go", "Java", "C++", "Dart", "Kotlin", "Swift", "Ruby"];
+
+const features = [
   {
-    key: "map",
-    eyebrow: "01 / graph terrain",
-    title: "Map a repo like a living system.",
-    body: "2D and 3D dependency views reveal folders, edges, imports, external packages, and implicit framework relationships without flattening the codebase into a static report.",
-    signal: "1,248 indexed files",
-    graphLabel: "folder clusters + import flow",
-    statA: "2D / 3D",
-    statB: "weighted edges",
+    num: "01",
+    title: "Graph Terrain",
+    body: "2D and 3D dependency views reveal folders, edges, and implicit framework relationships.",
     icon: Network,
   },
   {
-    key: "impact",
-    eyebrow: "02 / blast radius",
-    title: "Preview the damage before the refactor.",
-    body: "Pick a file and trace downstream paths with risk coloring, health grades, circular dependency markers, churn overlays, snapshots, and diffable graph state.",
-    signal: "42 affected nodes",
-    graphLabel: "risk path highlighted",
-    statA: "blast radius",
-    statB: "snapshot diff",
+    num: "02",
+    title: "Blast Radius",
+    body: "Preview the damage before the refactor. Trace downstream paths with risk coloring.",
     icon: Radar,
   },
   {
-    key: "ai",
-    eyebrow: "03 / codebase memory",
-    title: "Ask questions inside the architecture.",
-    body: "Use Gemini or local OpenAI-compatible providers to explain files, group semantic domains, and execute AI-assisted refactor previews on your own machine.",
-    signal: "local AI ready",
-    graphLabel: "semantic domains grouped",
-    statA: "file Q&A",
-    statB: "local provider",
+    num: "03",
+    title: "Codebase Memory",
+    body: "Use Gemini or local OpenAI-compatible providers to ask questions inside the architecture.",
     icon: Bot,
   },
-] as const;
-
-const gallery = [
-  ["Find dead code", "Orphaned files and unused exports are marked directly in the graph instead of buried in reports."],
-  ["Preview refactors", "Select a node and see downstream impact before renaming, moving, or deleting code."],
-  ["Trace React props", "Follow prop-drilling paths through component trees without jumping across tabs."],
-  ["Audit dependencies", "External packages, unused dependencies, and OSV vulnerability badges stay visible on the map."],
 ];
 
-const stack = ["TypeScript", "Rust", "Tauri", "React", "Next.js", "Python", "C/C++", "Dart", "Java", "Go", "CMake"];
-
-const audience = [
-  "Refactoring legacy repositories",
-  "Onboarding into unfamiliar systems",
-  "Reviewing architecture before PRs",
-  "Auditing dependency and Git risk",
-];
-
-const walkthrough = [
-  ["Open a repo", "Pick a local workspace through the native file dialog."],
-  ["Index the graph", "Rust extracts imports, symbols, packages, and framework links."],
-  ["Inspect risk", "Filter, diff, ask AI, export, or stage changes from the same console."],
+const steps = [
+  { num: "1", title: "Open a repo", body: "Pick a local workspace." },
+  { num: "2", title: "Index the graph", body: "Rust extracts relationships fast." },
+  { num: "3", title: "Inspect risk", body: "Filter, diff, ask AI, export." },
 ];
 
 const releaseDetails = [
-  ["Version", "1.0.0"],
-  ["Platform", "Windows x64"],
-  ["Setup EXE", "3.8 MB"],
-  ["MSI package", "5.2 MB"],
-  ["Released", "May 29, 2026"],
-  ["Signing", "Unsigned local build"],
+  { label: "Version", value: "1.0.0" },
+  { label: "Platform", value: "Windows x64" },
+  { label: "Setup EXE", value: "3.8 MB" },
+  { label: "MSI package", value: "5.2 MB" },
+  { label: "Released", value: "May 29, 2026" },
 ];
 
 const changelog = [
@@ -98,443 +63,87 @@ const changelog = [
   "Gemini and local OpenAI-compatible provider support",
 ];
 
-export default function InteractiveLanding() {
-  const [activeMode, setActiveMode] = useState<(typeof modes)[number]["key"]>("map");
-  const mode = useMemo(() => modes.find((item) => item.key === activeMode) ?? modes[0], [activeMode]);
-  const ModeIcon = mode.icon;
+// --- Animations ---
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+};
+
+const stagger = (delay = 0.08) => ({
+  hidden: {},
+  visible: { transition: { staggerChildren: delay } },
+});
+
+const cinematicRevealContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+};
+
+const cinematicRevealText = {
+  hidden: { y: "110%" },
+  visible: { y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const } },
+};
+
+// --- Components ---
+
+function Noise() {
+  return <div className="noise-overlay" aria-hidden="true" />;
+}
+
+function AmbientOrbs() {
   return (
-    <>
-      <SmoothScroll />
-      <main className="site">
-        <DynamicBackground />
-        <IntroLoader />
-
-        <nav className="nav" aria-label="Primary">
-          <a className="brand" href="#top" aria-label="Dataflow Visualiser home">
-            <span className="brandMark">DV</span>
-            <span>D A T A F L O W</span>
-          </a>
-          <div className="navLinks">
-            <a href="#work">WORK</a>
-            <a href="#engine">ENGINE</a>
-            <a href="#privacy">PRIVACY</a>
-            <a href="#download">DOWNLOAD</a>
-            <ThemeToggle />
-          </div>
-        </nav>
-
-        <motion.section 
-          className="hero" 
-          id="top"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <div className="heroMeta">
-            <span>AVAILABLE / WINDOWS X64</span>
-            <span>SPECIALIZATION / CODEBASE INTELLIGENCE</span>
-            <span>ENGINE / RUST + TAURI</span>
-          </div>
-
-          <div className="heroType">
-            <p>
-              See dependencies, blast radius, Git volatility, and AI code context in one local-first desktop workspace.
-            </p>
-            <h1>
-              DATAFLOW
-              <br />
-              VISUALISER
-            </h1>
-          </div>
-
-          <div className="heroBottom">
-            <div className="availability">
-              <span />
-              Release 1.0.0 ready for download
-            </div>
-            <div className="heroActions">
-              <a className="button dark" href={primaryDownload} download>
-                <Download size={18} aria-hidden="true" />
-                Download EXE
-              </a>
-              <a className="button light" href={msiDownload} download>
-                <ArrowDownToLine size={18} aria-hidden="true" />
-                MSI
-              </a>
-            </div>
-          </div>
-          <div className="heroProof">
-            <span>Built for codebases too large to reason about from tabs alone.</span>
-            <span>Native parsing. Spatial maps. Private by default.</span>
-          </div>
-        </motion.section>
-
-        <section className="showcase" id="work">
-          <div className="showcaseHeader">
-            <span>PROJECT PREVIEW</span>
-            <span>INTERACTIVE DEPENDENCY MAP</span>
-          </div>
-          <div className="productPanel">
-            <aside className="leftRail">
-              <span>GRAPH</span>
-              <span>IMPACT</span>
-              <span>AI MAP</span>
-              <span>GIT</span>
-            </aside>
-            <GraphScene activeMode={activeMode} graphLabel={mode.graphLabel} />
-            <aside className="rightRail">
-              <small>{mode.eyebrow}</small>
-              <strong>{mode.signal}</strong>
-              <div className="railLine" />
-              <span>
-                <Check size={14} /> indexed
-              </span>
-              <span>
-                <Check size={14} /> diffable
-              </span>
-              <span>
-                <Check size={14} /> private
-              </span>
-            </aside>
-          </div>
-        </section>
-
-        <section className="modeSection">
-          <div className="modeCopy">
-            <p>{mode.eyebrow}</p>
-            <h2>{mode.title}</h2>
-            <span>{mode.body}</span>
-          </div>
-          <div className="modeControls" role="tablist" aria-label="Product modes">
-            {modes.map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  aria-selected={activeMode === item.key}
-                  className={activeMode === item.key ? "active" : ""}
-                  key={item.key}
-                  onClick={() => setActiveMode(item.key)}
-                  role="tab"
-                  type="button"
-                >
-                  <Icon size={18} aria-hidden="true" />
-                  <span>{item.key}</span>
-                </button>
-              );
-            })}
-          </div>
-          <div className="modeSignal">
-            <ModeIcon size={34} aria-hidden="true" />
-            <span>{mode.signal}</span>
-            <small>{mode.statA}</small>
-            <small>{mode.statB}</small>
-          </div>
-        </section>
-
-        <motion.section 
-          className="walkthroughSection" 
-          aria-label="Product walkthrough"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="walkthroughIntro">
-            <p>DEMO FLOW</p>
-            <h2>From folder to architecture map in three moves.</h2>
-          </div>
-          <div className="walkthroughGrid">
-            {walkthrough.map(([title, body], index) => (
-              <WalkthroughCard key={title} title={title} body={body} index={index} />
-            ))}
-          </div>
-        </motion.section>
-
-        <section className="audienceSection" aria-label="Who Dataflow Visualiser is for">
-          <div>
-            <p>FOR ENGINEERS WHO ARE</p>
-            <h2>Changing code they cannot fully hold in their head.</h2>
-          </div>
-          <div className="audienceList">
-            {audience.map((item) => (
-              <span key={item}>
-                <Check size={16} aria-hidden="true" />
-                {item}
-              </span>
-            ))}
-          </div>
-        </section>
-
-        <section className="engineSection" id="engine">
-          <div className="engineShell">
-            <div className="engineIntro">
-              <p>ABOUT THE ENGINE</p>
-              <h2>Native analysis for living code maps.</h2>
-              <span>
-                Dataflow Visualiser is a desktop architecture console: Rust indexes the repository, React renders the workspace, and the signal layer keeps risk attached to real files.
-              </span>
-            </div>
-
-            <div className="engineFlow" aria-label="Engine pipeline">
-              <article>
-                <small>01</small>
-                <strong>Rust Core</strong>
-                <span>AST parsing, filesystem traversal, graph construction, and native-speed indexing.</span>
-              </article>
-              <article>
-                <small>02</small>
-                <strong>React Studio</strong>
-                <span>2D and 3D maps, filters, matrix view, inspector, snapshots, and exports.</span>
-              </article>
-              <article>
-                <small>03</small>
-                <strong>Signal Layer</strong>
-                <span>Blast radius, cycles, unused exports, CVE risk, health scores, and Git churn.</span>
-              </article>
-            </div>
-
-            <div className="engineFooter">
-              <span>
-                <b>10-50x</b>
-                faster JS/TS parsing path
-              </span>
-              <span>
-                <b>Local</b>
-                repo-first analysis
-              </span>
-              <span>
-                <b>Tauri</b>
-                explicit filesystem boundaries
-              </span>
-            </div>
-          </div>
-        </section>
-
-        <motion.section 
-          className="galleryGrid" 
-          aria-label="Capability gallery"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.15 } }
-          }}
-        >
-          {gallery.map(([title, body], index) => (
-            <motion.article 
-              className="galleryCard" 
-              key={title}
-              variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-              }}
-            >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <h3>{title}</h3>
-              <p>{body}</p>
-              <ChevronRight size={20} aria-hidden="true" />
-            </motion.article>
-          ))}
-        </motion.section>
-
-        <section className="stackMarquee" aria-label="Supported stack">
-          <div>
-            {[...stack, ...stack].map((item, index) => (
-              <span key={`${item}-${index}`}>{item}</span>
-            ))}
-          </div>
-        </section>
-
-        <section className="privacySection" id="privacy">
-          <div className="privacyCopy">
-            <p>PRIVACY MODEL</p>
-            <h2>Local first, explicit when AI leaves the machine.</h2>
-            <span>
-              Repository indexing happens in the desktop app. Cloud AI is opt-in through your provider key; local AI endpoints keep semantic mapping and Q&A on your own hardware.
-            </span>
-          </div>
-          <div className="privacyCards">
-            <article>
-              <ShieldCheck size={24} />
-              <strong>Local indexing</strong>
-              <p>File access starts from the native directory picker and Tauri capability scopes.</p>
-            </article>
-            <article>
-              <Lock size={24} />
-              <strong>Provider choice</strong>
-              <p>Use Gemini for cloud assistance or Ollama, LM Studio, vLLM, and compatible local APIs.</p>
-            </article>
-          </div>
-        </section>
-
-        <section className="trustGrid">
-          <div>
-            <Eye size={24} />
-            <span>Architecture visibility</span>
-          </div>
-          <div>
-            <FileWarning size={24} />
-            <span>Risk before edits</span>
-          </div>
-          <div>
-            <GitBranch size={24} />
-            <span>Git-aware analysis</span>
-          </div>
-          <div>
-            <TerminalSquare size={24} />
-            <span>Integrated terminal</span>
-          </div>
-        </section>
-
-        <section className="downloadSection" id="download">
-          <div className="downloadLabel">
-            <Code2 size={18} />
-            WINDOWS RELEASE
-          </div>
-          <h2>
-            DOWNLOAD
-            <br />
-            THE APP.
-          </h2>
-          <p>The current release artifacts are served directly from this Next.js landing site.</p>
-          <div className="releaseMeta">
-            {releaseDetails.map(([label, value]) => (
-              <span key={label}>
-                <small>{label}</small>
-                <b>{value}</b>
-              </span>
-            ))}
-          </div>
-          <div className="downloadActions">
-            <a className="button dark" href={primaryDownload} download>
-              <Download size={18} />
-              Windows setup EXE
-            </a>
-            <a className="button light" href={msiDownload} download>
-              <ArrowDownToLine size={18} />
-              Windows MSI package
-            </a>
-          </div>
-          <div className="changelog">
-            <strong>What is in 1.0.0</strong>
-            {changelog.map((item) => (
-              <span key={item}>
-                <Check size={15} />
-                {item}
-              </span>
-            ))}
-          </div>
-        </section>
-
-        <footer className="siteFooter">
-          <div>
-            <span className="brandMark">DV</span>
-            <strong>Dataflow Visualiser</strong>
-          </div>
-          <p>MIT licensed desktop app for local-first codebase dependency analysis.</p>
-          <nav aria-label="Footer">
-            <a href="#top">Top</a>
-            <a href="#work">Preview</a>
-            <a href="#privacy">Privacy</a>
-            <a href="#download">Download</a>
-          </nav>
-        </footer>
-      </main>
-    </>
+    <div className="ambient-orbs" aria-hidden="true">
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+      <div className="orb orb-3" />
+    </div>
   );
 }
 
 function SmoothScroll() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const lenis = new Lenis({
       duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      wheelMultiplier: 0.9,
     });
-
-    let frame = 0;
     const raf = (time: number) => {
       lenis.raf(time);
-      frame = requestAnimationFrame(raf);
+      requestAnimationFrame(raf);
     };
-
-    const onClick = (event: MouseEvent) => {
-      const link = (event.target as HTMLElement).closest("a[href^='#']") as HTMLAnchorElement | null;
-      if (!link) return;
-      const id = link.getAttribute("href");
-      if (!id || id === "#") return;
-      const element = document.querySelector<HTMLElement>(id);
-      if (!element) return;
-      event.preventDefault();
-      lenis.scrollTo(element, { offset: -18 });
-    };
-
-    frame = requestAnimationFrame(raf);
-    document.addEventListener("click", onClick);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      document.removeEventListener("click", onClick);
-      lenis.destroy();
-    };
+    requestAnimationFrame(raf);
+    return () => lenis.destroy();
   }, []);
-
   return null;
 }
 
 function IntroLoader() {
-  return (
-    <div className="introLoader" aria-hidden="true">
-      <span>100</span>
-      <p>Initializing visual engine</p>
-    </div>
-  );
-}
-
-function DynamicBackground() {
-  const backgroundRef = useRef<HTMLDivElement>(null);
+  const [count, setCount] = useState(0);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
-    const element = backgroundRef.current;
-    if (!element) return;
+    let start = performance.now();
+    const duration = 1200;
 
-    const handlePointerMove = (event: PointerEvent) => {
-      const x = (event.clientX / window.innerWidth) * 100;
-      const y = (event.clientY / window.innerHeight) * 100;
-      element.style.setProperty("--pointer-x", `${x}%`);
-      element.style.setProperty("--pointer-y", `${y}%`);
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * 100));
+
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        setTimeout(() => setDone(true), 200);
+      }
     };
-
-    window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    return () => window.removeEventListener("pointermove", handlePointerMove);
+    requestAnimationFrame(tick);
   }, []);
 
   return (
-    <div className="dynamicBackground" ref={backgroundRef} aria-hidden="true">
-      <div className="backgroundWash" />
-      <div className="contourLines">
-        {Array.from({ length: 9 }).map((_, index) => (
-          <span key={index} />
-        ))}
-      </div>
-      <div className="scanRails">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <span key={index} />
-        ))}
-      </div>
-      <div className="dataStrips">
-        <span>AST</span>
-        <span>GRAPH</span>
-        <span>RISK</span>
-        <span>LOCAL</span>
-      </div>
+    <div className={`intro-loader ${done ? "done" : ""}`} aria-hidden="true">
+      <div className="logo">DV</div>
+      <div className="counter">{String(count).padStart(3, "0")}</div>
     </div>
   );
 }
@@ -542,85 +151,257 @@ function DynamicBackground() {
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => setMounted(true), []);
-
-  if (!mounted) return <div style={{ width: 24, height: 24 }} />;
-
+  if (!mounted) return <div style={{ width: 16 }} />;
+  
   return (
-    <button
+    <button 
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      style={{ background: "none", border: "none", cursor: "pointer", color: "var(--fg)" }}
       aria-label="Toggle theme"
-      style={{ background: "transparent", border: "none", display: "flex", alignItems: "center" }}
     >
-      {theme === "dark" ? <Bot size={18} /> : <Eye size={18} />}
+      {theme === "dark" ? <Eye size={16} /> : <Bot size={16} />}
     </button>
   );
 }
 
-function WalkthroughCard({ title, body, index }: { title: string; body: string; index: number }) {
-  const cardRef = useRef<HTMLElement>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+// --- Main Page ---
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    setMousePosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
-
+export default function InteractiveLanding() {
   return (
-    <article 
-      ref={cardRef} 
-      onMouseMove={handleMouseMove}
-      style={{
-        '--mouse-x': `${mousePosition.x}px`,
-        '--mouse-y': `${mousePosition.y}px`,
-      } as React.CSSProperties}
-    >
-      <span>{String(index + 1).padStart(2, "0")}</span>
-      <strong>{title}</strong>
-      <p>{body}</p>
-    </article>
-  );
-}
+    <>
+      <SmoothScroll />
+      <Noise />
+      <AmbientOrbs />
+      <IntroLoader />
 
-function GraphScene({ activeMode, graphLabel }: { activeMode: string; graphLabel: string }) {
-  return (
-    <div className={`graphScene ${activeMode}`}>
-      <div className="sceneTop">
-        <span>workspace / dependency-map</span>
-        <strong>{graphLabel}</strong>
-      </div>
-      <svg viewBox="0 0 760 500" role="img" aria-label="Animated dependency graph preview">
-        <defs>
-          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
-        <path className="edge e1" d="M104 112 C230 56, 356 74, 542 142" />
-        <path className="edge e2" d="M142 360 C282 232, 428 250, 636 172" />
-        <path className="edge e3" d="M206 168 C298 218, 330 368, 512 374" />
-        <path className="edge e4" d="M386 116 C452 198, 454 292, 620 342" />
-        <path className="edge e5" d="M92 266 C210 310, 276 146, 386 116" />
-        <g className="nodes">
-          <circle cx="104" cy="112" r="38" filter="url(#glow)" />
-          <circle cx="142" cy="360" r="47" filter="url(#glow)" />
-          <circle cx="542" cy="142" r="54" filter="url(#glow)" />
-          <circle cx="636" cy="172" r="32" filter="url(#glow)" />
-          <circle cx="512" cy="374" r="48" filter="url(#glow)" />
-          <circle cx="620" cy="342" r="28" filter="url(#glow)" />
-          <circle cx="386" cy="116" r="35" filter="url(#glow)" />
-          <circle cx="302" cy="272" r="24" filter="url(#glow)" />
-          <circle cx="92" cy="266" r="29" filter="url(#glow)" />
-        </g>
-      </svg>
-      <div className="sceneBadge one">UI layer</div>
-      <div className="sceneBadge two">Rust parser</div>
-      <div className="sceneBadge three">AI domain map</div>
-    </div>
+      <main className="site">
+        <nav className="nav">
+          <a href="#" className="brand">
+            DV
+          </a>
+          <div className="links">
+            <a href="#engine">Engine</a>
+            <a href="#download">Download</a>
+            <ThemeToggle />
+          </div>
+        </nav>
+
+        {/* HERO */}
+        <section className="hero">
+          <motion.div initial="hidden" animate="visible" variants={stagger(0.1)}>
+            <motion.h1 variants={cinematicRevealContainer}>
+              <div style={{ overflow: "hidden" }}>
+                <motion.span style={{ display: "block" }} variants={cinematicRevealText}>DATAFLOW</motion.span>
+              </div>
+              <div style={{ overflow: "hidden" }}>
+                <motion.span style={{ display: "block" }} variants={cinematicRevealText}>VISUALISER</motion.span>
+              </div>
+            </motion.h1>
+            <motion.p className="tagline font-light" variants={fadeUp}>
+              See your codebase. All of it.
+            </motion.p>
+            <motion.div className="actions" variants={fadeUp}>
+              <a href={primaryDownload} className="btn primary">
+                Download for Windows
+              </a>
+              <span className="mono-label text-muted">V1.0.0</span>
+            </motion.div>
+          </motion.div>
+        </section>
+
+        {/* MARQUEE */}
+        <section style={{ padding: 0 }}>
+          <div className="marquee-container">
+            <div className="marquee-track">
+              {[...stack, ...stack, ...stack, ...stack].map((item, i) => (
+                <span key={i} className="marquee-item">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* PRODUCT SHOWCASE */}
+        <motion.section 
+          id="product"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+          variants={stagger()}
+        >
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "24px" }}>
+            Understand the structure<br/>before you break it.
+          </motion.h2>
+          
+          <motion.div className="card-grid" variants={fadeUp}>
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <div key={feature.num} className="card">
+                  <span className="mono-label">{feature.num}</span>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.body}</p>
+                  <Icon className="icon" size={24} />
+                </div>
+              );
+            })}
+          </motion.div>
+
+          <motion.div className="graph-container" variants={fadeUp}>
+            <svg viewBox="0 0 760 300" role="img" aria-label="Animated dependency graph preview">
+              <path id="p1" className="edge" d="M100 150 C 250 50, 400 250, 600 150" />
+              <path id="p2" className="edge" d="M100 150 C 300 250, 500 50, 600 150" />
+              <path id="p3" className="edge" d="M350 150 C 450 100, 500 200, 600 150" />
+              
+              <circle className="dataPulse" r="4">
+                <animateMotion dur="4s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion>
+              </circle>
+              <circle className="dataPulse" r="4">
+                <animateMotion dur="5s" repeatCount="indefinite" begin="-2s"><mpath href="#p2"/></animateMotion>
+              </circle>
+              
+              <g className="nodes">
+                <circle cx="100" cy="150" r="16" />
+                <circle cx="350" cy="150" r="24" />
+                <circle cx="600" cy="150" r="20" />
+              </g>
+            </svg>
+          </motion.div>
+        </motion.section>
+
+        {/* HOW IT WORKS */}
+        <motion.section 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+          variants={stagger()}
+        >
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)" }}>
+            Workflow
+          </motion.h2>
+          <motion.div className="step-grid" variants={stagger()}>
+            {steps.map((step) => (
+              <motion.div key={step.num} className="step-item" variants={fadeUp}>
+                <span className="step-number font-light">{step.num}</span>
+                <h4 style={{ fontSize: "24px" }}>{step.title}</h4>
+                <p className="text-muted">{step.body}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.section>
+
+        {/* ENGINE */}
+        <motion.section 
+          id="engine"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+          variants={stagger()}
+        >
+          <motion.div className="engine-panel" variants={fadeUp}>
+            <h2>Built with Rust.<br/><span className="font-light">Rendered in React.</span></h2>
+            <p style={{ maxWidth: "600px", fontSize: "18px", opacity: 0.8 }}>
+              Dataflow Visualiser is a desktop architecture console. Rust indexes the repository, React renders the workspace, and the signal layer keeps risk attached to real files.
+            </p>
+            <div className="engine-stats">
+              <div className="engine-stat">
+                <h4>10-50x</h4>
+                <p>Faster parsing path</p>
+              </div>
+              <div className="engine-stat">
+                <h4>Local</h4>
+                <p>Repo-first analysis</p>
+              </div>
+              <div className="engine-stat">
+                <h4>Tauri</h4>
+                <p>Explicit filesystem boundaries</p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.section>
+
+        {/* PRIVACY */}
+        <motion.section 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+          variants={stagger()}
+        >
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "40px" }}>
+            Privacy by default.
+          </motion.h2>
+          <motion.div className="card-grid" style={{ marginTop: 0 }} variants={stagger()}>
+            <motion.div className="card" variants={fadeUp}>
+              <ShieldCheck className="icon" style={{ marginTop: 0, marginBottom: "24px" }} size={24} />
+              <h3>Local Indexing</h3>
+              <p>File access starts from the native directory picker and Tauri capability scopes. No code leaves your machine without consent.</p>
+            </motion.div>
+            <motion.div className="card" variants={fadeUp}>
+              <Lock className="icon" style={{ marginTop: 0, marginBottom: "24px" }} size={24} />
+              <h3>Provider Choice</h3>
+              <p>Use Gemini for cloud assistance or Ollama, LM Studio, vLLM, and compatible local APIs to keep all AI requests on-device.</p>
+            </motion.div>
+          </motion.div>
+        </motion.section>
+
+        {/* DOWNLOAD */}
+        <motion.section 
+          id="download"
+          className="download-section"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-10%" }}
+          variants={stagger()}
+        >
+          <motion.h2 variants={fadeUp}>
+            Download<br/><span className="font-light">the app.</span>
+          </motion.h2>
+          
+          <motion.div className="download-meta" variants={fadeUp}>
+            {releaseDetails.map((detail) => (
+              <div key={detail.label} className="meta-item">
+                <span className="mono-label text-muted">{detail.label}</span>
+                <span className="val">{detail.value}</span>
+              </div>
+            ))}
+          </motion.div>
+
+          <motion.div className="actions" style={{ justifyContent: "center" }} variants={fadeUp}>
+            <a href={primaryDownload} className="btn primary">
+              <Download size={16} /> Windows Setup
+            </a>
+            <a href={msiDownload} className="btn secondary">
+              MSI Package
+            </a>
+          </motion.div>
+
+          <motion.div className="changelog-list" variants={fadeUp}>
+            <h4>What's in 1.0.0</h4>
+            <ul>
+              {changelog.map((item, i) => (
+                <li key={i}>
+                  <span className="text-accent">•</span> {item}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </motion.section>
+
+        {/* FOOTER */}
+        <footer className="footer">
+          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+            <strong style={{ color: "var(--fg)" }}>DV</strong>
+            <span>MIT Licensed</span>
+          </div>
+          <div className="footer-nav">
+            <a href="#">Top</a>
+            <a href="#engine">Engine</a>
+            <a href="#download">Download</a>
+          </div>
+        </footer>
+      </main>
+    </>
   );
 }

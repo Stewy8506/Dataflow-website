@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
-import { DM_Sans, Noto_Sans } from "next/font/google";
+import { Sora, Outfit } from "next/font/google";
 import "./globals.css";
-
 
 import { ThemeProvider } from "./components/ThemeProvider";
 
-const dmSans = DM_Sans({
+const sora = Sora({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const quicksand = Noto_Sans({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-quicksand",
+  variable: "--font-light",
+  weight: ["300", "400", "500"],
 });
 
 export const metadata: Metadata = {
-  title: "Dataflow Visualiser | Native Codebase Dependency Maps",
-  description:
-    "Download Dataflow Visualiser, a native desktop app for dependency graphs, blast-radius analysis, snapshots, AI code mapping, and local-first codebase exploration.",
+  title: "Dataflow Visualiser",
+  description: "Dataflow Visualiser. Native architecture console.",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${dmSans.variable} ${quicksand.variable}`}>
+      <body className={`${sora.variable} ${outfit.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
