@@ -5,7 +5,6 @@ import { cinematicRevealContainer, cinematicRevealText, fadeUp, stagger } from "
 import { DOWNLOADS } from "../../data/content";
 import { MagneticButton } from "../ui/MagneticButton";
 import { usePlatform } from "../../hooks/usePlatform";
-import { Hero3D } from "../ui/Hero3D";
 
 export function Hero() {
   const platform = usePlatform();
@@ -17,7 +16,6 @@ export function Hero() {
 
   return (
     <section className="hero" style={{ position: "relative" }}>
-      <Hero3D />
       <motion.div 
         initial="hidden" 
         animate="visible" 
