@@ -42,8 +42,12 @@ export default function InteractiveLanding() {
         <Navbar />
         <div id="hero" className="scroll-section"><Hero /></div>
         <div id="marquee" className="scroll-section"><Marquee /></div>
-        <div id="showcase" className="scroll-section"><ProductShowcase /></div>
-        <div id="workflow" className="scroll-section"><Workflow /></div>
+        <div id="showcase" className="scroll-section">
+          <ProductShowcase />
+        </div>
+        <div id="workflow" className="scroll-section">
+          <Workflow />
+        </div>
         <div id="ecosystems" className="scroll-section"><Ecosystems /></div>
         <div id="engine" className="scroll-section"><Engine /></div>
         <div id="privacy" className="scroll-section"><Privacy /></div>

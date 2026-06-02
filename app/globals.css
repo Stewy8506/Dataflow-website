@@ -662,17 +662,11 @@ section {
 /* Graph Container */
 .graph-container {
   width: 100%;
-  background: #050505; /* Always dark for the graph */
-  border-radius: 1.5rem;
-  border: 1px solid var(--border);
-  overflow: hidden;
   position: relative;
   margin-top: 64px;
-  padding: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: crosshair;
 }
 
 .graph-container svg {

@@ -78,9 +78,6 @@ export function ProductShowcase() {
         })}
       </motion.div>
 
-      <motion.div className="graph-container" variants={fadeUp}>
-        <GraphPreview />
-      </motion.div>
     </motion.section>
   );
 }
