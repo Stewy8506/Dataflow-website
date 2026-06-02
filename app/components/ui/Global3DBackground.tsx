@@ -113,10 +113,12 @@ function MorphingParticles() {
       posHero[idx + 1] = rHero * Math.sin(phiHero) * Math.sin(thetaHero);
       posHero[idx + 2] = rHero * Math.cos(phiHero);
       
-      // 2. Showcase: Flat grid with a blast ripple hole
-      posShowcase[idx] = (Math.random() - 0.5) * 60;
-      posShowcase[idx + 1] = -10;
-      posShowcase[idx + 2] = (Math.random() - 0.5) * 60;
+      // 2. Showcase: 3D Structured Lattice (The Structure)
+      const gridSize = 40;
+      const step = 2.0;
+      posShowcase[idx] = Math.round((Math.random() - 0.5) * gridSize / step) * step;
+      posShowcase[idx + 1] = Math.round((Math.random() - 0.5) * gridSize / step) * step;
+      posShowcase[idx + 2] = Math.round((Math.random() - 0.5) * gridSize / step) * step;
       
       // 3. Workflow: Long pipeline cylinders
       const rPipe = 5 + Math.random() * 2;
@@ -127,14 +129,14 @@ function MorphingParticles() {
       
       // 4. Ecosystems: 1 Core + 4 Moons
       const moonId = i % 5;
-      if (moonId === 0) { // Core
+      if (moonId === 0) {
         const rCore = 8 * Math.cbrt(Math.random());
         const tCore = 2 * Math.PI * Math.random();
         const pCore = Math.acos(2 * Math.random() - 1);
         posEcosystems[idx] = rCore * Math.sin(pCore) * Math.cos(tCore);
         posEcosystems[idx + 1] = rCore * Math.sin(pCore) * Math.sin(tCore);
         posEcosystems[idx + 2] = rCore * Math.cos(pCore);
-      } else { // Orbiting moons
+      } else {
         const rMoon = 3 * Math.cbrt(Math.random());
         const tMoon = 2 * Math.PI * Math.random();
         const pMoon = Math.acos(2 * Math.random() - 1);
@@ -153,7 +155,6 @@ function MorphingParticles() {
       const xKnot = (knotR + tubeR * Math.cos(q * u)) * Math.cos(p * u);
       const yKnot = (knotR + tubeR * Math.cos(q * u)) * Math.sin(p * u);
       const zKnot = tubeR * Math.sin(q * u);
-      // add noise
       posEngine[idx] = xKnot + (Math.random()-0.5)*3;
       posEngine[idx + 1] = yKnot + (Math.random()-0.5)*3;
       posEngine[idx + 2] = zKnot + (Math.random()-0.5)*3;
@@ -194,10 +195,11 @@ function MorphingParticles() {
     if (!materialRef.current) return;
     
     const time = state.clock.getElapsedTime();
-    materialRef.current.uniforms.uTime.value = time;
-    materialRef.current.uniforms.uMouse.value.set(state.pointer.x, state.pointer.y);
+    const u = materialRef.current.uniforms;
+    
+    u.uTime.value = time;
+    u.uMouse.value.set(state.pointer.x, state.pointer.y);
 
-    // Smooth uniform lerping
     const targetMix = {
       hero: activeSection === "hero" || activeSection === "marquee" || activeSection === "download" || activeSection === "" ? 1 : 0,
       showcase: activeSection === "showcase" ? 1 : 0,
@@ -207,8 +209,7 @@ function MorphingParticles() {
       privacy: activeSection === "privacy" ? 1 : 0,
     };
 
-    const rate = delta * 3.0;
-    const u = materialRef.current.uniforms;
+    const rate = delta * 1.5;
     u.uMixHero.value += (targetMix.hero - u.uMixHero.value) * rate;
     u.uMixShowcase.value += (targetMix.showcase - u.uMixShowcase.value) * rate;
     u.uMixWorkflow.value += (targetMix.workflow - u.uMixWorkflow.value) * rate;
@@ -216,7 +217,7 @@ function MorphingParticles() {
     u.uMixEngine.value += (targetMix.engine - u.uMixEngine.value) * rate;
     u.uMixPrivacy.value += (targetMix.privacy - u.uMixPrivacy.value) * rate;
     
-    // Slow cinematic camera rotation
+    // Cinematic camera rotation
     state.camera.position.x = Math.sin(time * 0.1) * 5;
     state.camera.position.z = Math.cos(time * 0.1) * 5 + 30;
     state.camera.lookAt(0, 0, 0);
@@ -225,7 +226,6 @@ function MorphingParticles() {
   return (
     <points frustumCulled={false}>
       <bufferGeometry>
-        {/* We use posHero as the standard 'position' attribute to satisfy Three.js */}
         <bufferAttribute attach="attributes-position" count={count} array={geometryData.posHero} itemSize={3} args={[geometryData.posHero, 3]} />
         <bufferAttribute attach="attributes-posShowcase" count={count} array={geometryData.posShowcase} itemSize={3} args={[geometryData.posShowcase, 3]} />
         <bufferAttribute attach="attributes-posWorkflow" count={count} array={geometryData.posWorkflow} itemSize={3} args={[geometryData.posWorkflow, 3]} />
