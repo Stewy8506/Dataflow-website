@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { useTheme } from "next-themes";
 import { useBgStore } from "../../store/bgStore";
+import { useScroll, useVelocity, useSpring } from "framer-motion";
 
 const vertexShader = `
 uniform float uTime;
@@ -20,6 +21,8 @@ uniform float uMixPrivacy;
 
 uniform vec3 uColor1;
 uniform vec3 uColor2;
+
+uniform float uScrollVelocity;
 
 // WebGL automatically defines 'attribute vec3 position;'
 attribute vec3 posShowcase;
@@ -41,8 +44,8 @@ void main() {
                    posEngine * uMixEngine + 
                    posPrivacy * uMixPrivacy;
                    
-  // Add some universal subtle noise
-  float noise = sin(targetPos.y * 0.1 + uTime) * cos(targetPos.z * 0.1 + uTime);
+  // Add some universal subtle noise - slowed down to reduce flicker
+  float noise = sin(targetPos.y * 0.1 + uTime * 0.5) * cos(targetPos.z * 0.1 + uTime * 0.5);
   targetPos += vec3(noise, noise, noise) * 0.5;
 
   // Add mouse repulsion
@@ -53,16 +56,21 @@ void main() {
   vec4 mvPosition = modelViewMatrix * vec4(targetPos, 1.0);
   gl_Position = projectionMatrix * mvPosition;
   
-  // Dynamic sizing based on depth
-  gl_PointSize = (10.0 * aRandom) / -mvPosition.z;
-  if (gl_PointSize < 1.0) gl_PointSize = 1.0;
+  // Dynamic sizing based on depth - heavily increased for larger particles
+  gl_PointSize = (250.0 * aRandom + 25.0) / -mvPosition.z;
+  if (gl_PointSize < 5.0) gl_PointSize = 5.0;
   
   // Color Mixing
   float mixRatio = clamp((targetPos.y + 10.0) / 20.0, 0.0, 1.0);
   vColor = mix(uColor1, uColor2, mixRatio);
   
   float depth = -mvPosition.z;
-  vAlpha = (1.0 - smoothstep(10.0, 100.0, depth)) * (0.3 + 0.7 * aRandom);
+  
+  // Speed boost based on scroll velocity (absolute value)
+  float speedBoost = clamp(abs(uScrollVelocity) * 0.006, 0.0, 1.0);
+  
+  // Base alpha is darker (0.1 + 0.2*random), adding speedBoost increases it dramatically
+  vAlpha = (1.0 - smoothstep(10.0, 100.0, depth)) * (0.15 + 0.2 * aRandom + speedBoost * 0.65);
 }
 `;
 
@@ -73,12 +81,12 @@ varying float vAlpha;
 void main() {
   vec2 uv = gl_PointCoord - vec2(0.5);
   
-  // Standard glowing dot
   float dist = length(uv);
   
   if (dist > 0.5) discard;
   
-  float alpha = (0.5 - dist) * 2.0 * vAlpha;
+  // Solid circle with slight anti-aliased edge, instead of a blurry dot
+  float alpha = smoothstep(0.5, 0.4, dist) * vAlpha;
   gl_FragColor = vec4(vColor, alpha);
 }
 `;
@@ -87,11 +95,16 @@ function MorphingParticles() {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const { resolvedTheme } = useTheme();
   const { activeSection } = useBgStore();
-  
+
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const smoothVelocity = useSpring(scrollVelocity, { damping: 25, stiffness: 800 });
+
   const isDark = resolvedTheme === "dark" || resolvedTheme === undefined;
 
-  const count = 50000;
-  
+  // Reduced count for cleaner look, but larger/brighter particles
+  const count = 2000;
+
   const geometryData = useMemo(() => {
     const posHero = new Float32Array(count * 3);
     const posShowcase = new Float32Array(count * 3);
@@ -100,11 +113,11 @@ function MorphingParticles() {
     const posEngine = new Float32Array(count * 3);
     const posPrivacy = new Float32Array(count * 3);
     const randoms = new Float32Array(count);
-    
+
     for (let i = 0; i < count; i++) {
       const idx = i * 3;
       randoms[i] = Math.random();
-      
+
       // 1. Hero: Massive chaotic sphere
       const rHero = 25 * Math.cbrt(Math.random());
       const thetaHero = 2 * Math.PI * Math.random();
@@ -112,21 +125,27 @@ function MorphingParticles() {
       posHero[idx] = rHero * Math.sin(phiHero) * Math.cos(thetaHero);
       posHero[idx + 1] = rHero * Math.sin(phiHero) * Math.sin(thetaHero);
       posHero[idx + 2] = rHero * Math.cos(phiHero);
+
+      // 2. Showcase: Flowing Digital Cyber-Landscape (Structured Data Flow)
+      // We arrange particles in a wide 2D grid, but map the Y coordinate to a sine wave to look like a flowing terrain.
+      const gridWidth = 80;
+      const gridDepth = 60;
+      const xGrid = (Math.random() - 0.5) * gridWidth;
+      const zGrid = (Math.random() - 0.5) * gridDepth;
+      // Add a subtle wave based on X and Z
+      const yWave = Math.sin(xGrid * 0.2) * 2.0 + Math.cos(zGrid * 0.2) * 2.0;
       
-      // 2. Showcase: 3D Structured Lattice (The Structure)
-      const gridSize = 40;
-      const step = 2.0;
-      posShowcase[idx] = Math.round((Math.random() - 0.5) * gridSize / step) * step;
-      posShowcase[idx + 1] = Math.round((Math.random() - 0.5) * gridSize / step) * step;
-      posShowcase[idx + 2] = Math.round((Math.random() - 0.5) * gridSize / step) * step;
-      
-      // 3. Workflow: Long pipeline cylinders
-      const rPipe = 5 + Math.random() * 2;
+      posShowcase[idx] = xGrid;
+      posShowcase[idx + 1] = yWave - 5.0; // Lower it so it sits under the content
+      posShowcase[idx + 2] = zGrid;
+
+      // 3. Workflow: Long pipeline cylinders - Widened to clear the center for text
+      const rPipe = 18 + Math.random() * 8;
       const tPipe = Math.random() * Math.PI * 2;
       posWorkflow[idx] = rPipe * Math.cos(tPipe);
       posWorkflow[idx + 1] = rPipe * Math.sin(tPipe);
       posWorkflow[idx + 2] = (Math.random() - 0.5) * 80;
-      
+
       // 4. Ecosystems: 1 Core + 4 Moons
       const moonId = i % 5;
       if (moonId === 0) {
@@ -146,7 +165,7 @@ function MorphingParticles() {
         posEcosystems[idx + 1] = rMoon * Math.sin(pMoon) * Math.sin(tMoon);
         posEcosystems[idx + 2] = Math.sin(orbitAngle) * orbitRadius + rMoon * Math.cos(pMoon);
       }
-      
+
       // 5. Engine: Torus Knot approximation
       const p = 3; const q = 4;
       const u = Math.random() * Math.PI * 2;
@@ -155,19 +174,43 @@ function MorphingParticles() {
       const xKnot = (knotR + tubeR * Math.cos(q * u)) * Math.cos(p * u);
       const yKnot = (knotR + tubeR * Math.cos(q * u)) * Math.sin(p * u);
       const zKnot = tubeR * Math.sin(q * u);
-      posEngine[idx] = xKnot + (Math.random()-0.5)*3;
-      posEngine[idx + 1] = yKnot + (Math.random()-0.5)*3;
-      posEngine[idx + 2] = zKnot + (Math.random()-0.5)*3;
-      
-      // 6. Privacy: Hollow Shield
-      const rShield = 18;
-      const tShield = 2 * Math.PI * Math.random();
-      const pShield = Math.acos(2 * Math.random() - 1);
-      posPrivacy[idx] = rShield * Math.sin(pShield) * Math.cos(tShield);
-      posPrivacy[idx + 1] = rShield * Math.sin(pShield) * Math.sin(tShield);
-      posPrivacy[idx + 2] = rShield * Math.cos(pShield);
+      posEngine[idx] = xKnot + (Math.random() - 0.5) * 3;
+      posEngine[idx + 1] = yKnot + (Math.random() - 0.5) * 3;
+      posEngine[idx + 2] = zKnot + (Math.random() - 0.5) * 3;
+
+      // 6. Privacy: Structured Tech Shield
+      const layer = Math.floor(Math.random() * 3); // 3 nested shields
+      const scale = 1.0 - layer * 0.25; // Sizes: 1.0, 0.75, 0.5
+
+      let xPos = (Math.random() - 0.5) * 2.0;
+      let yNorm = Math.random(); // 0 to 1, bottom to top
+
+      // 80% of particles form structured grid lines, 20% are random fill
+      const mode = Math.random();
+      if (mode < 0.4) {
+        // Horizontal bands
+        yNorm = Math.round(yNorm * 12) / 12;
+      } else if (mode < 0.8) {
+        // Vertical bands
+        xPos = Math.round(xPos * 12) / 12;
+      }
+
+      // Top curve: gently arching top
+      const y_top = (12 + 2 * Math.cos(xPos * Math.PI / 2)) * scale;
+      // Bottom curve: sharp point
+      const y_bottom = (-16 + 28 * Math.pow(Math.abs(xPos), 1.5)) * scale;
+
+      const x = xPos * 20 * scale;
+      const y = y_bottom + yNorm * (y_top - y_bottom);
+
+      // Curved in Z to form a shell. Center bulges out towards user.
+      const z = (8 - 15 * (xPos * xPos) - yNorm * 5) - layer * 15;
+
+      posPrivacy[idx] = x;
+      posPrivacy[idx + 1] = y + 2;
+      posPrivacy[idx + 2] = z + (Math.random() - 0.5) * 1.5; // slight thickness
     }
-    
+
     return { posHero, posShowcase, posWorkflow, posEcosystems, posEngine, posPrivacy, randoms };
   }, []);
 
@@ -181,7 +224,8 @@ function MorphingParticles() {
     uMixWorkflow: { value: 0.0 },
     uMixEcosystems: { value: 0.0 },
     uMixEngine: { value: 0.0 },
-    uMixPrivacy: { value: 0.0 }
+    uMixPrivacy: { value: 0.0 },
+    uScrollVelocity: { value: 0.0 }
   }), []);
 
   useEffect(() => {
@@ -193,12 +237,13 @@ function MorphingParticles() {
 
   useFrame((state, delta) => {
     if (!materialRef.current) return;
-    
+
     const time = state.clock.getElapsedTime();
     const u = materialRef.current.uniforms;
-    
+
     u.uTime.value = time;
     u.uMouse.value.set(state.pointer.x, state.pointer.y);
+    u.uScrollVelocity.value = smoothVelocity.get();
 
     const targetMix = {
       hero: activeSection === "hero" || activeSection === "marquee" || activeSection === "download" || activeSection === "" ? 1 : 0,
@@ -216,7 +261,7 @@ function MorphingParticles() {
     u.uMixEcosystems.value += (targetMix.ecosystems - u.uMixEcosystems.value) * rate;
     u.uMixEngine.value += (targetMix.engine - u.uMixEngine.value) * rate;
     u.uMixPrivacy.value += (targetMix.privacy - u.uMixPrivacy.value) * rate;
-    
+
     // Cinematic camera rotation
     state.camera.position.x = Math.sin(time * 0.1) * 5;
     state.camera.position.z = Math.cos(time * 0.1) * 5 + 30;
@@ -253,11 +298,17 @@ export function Global3DBackground() {
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-      <Canvas camera={{ position: [0, 0, 35], fov: 60 }} dpr={[1, 2]}>
+      <Canvas
+        dpr={typeof window !== "undefined" ? Math.min(window.devicePixelRatio, 1.5) : 1}
+        camera={{ position: [0, 0, 50], fov: 60, near: 0.1, far: 200 }}
+        style={{ background: "transparent" }}
+        gl={{ antialias: false, powerPreference: "high-performance", alpha: true }}
+      >
         <ambientLight intensity={0.5} />
         <MorphingParticles />
         <EffectComposer>
-          <Bloom luminanceThreshold={0.1} luminanceSmoothing={0.9} height={300} intensity={isDark ? 2.0 : 1.0} />
+          {/* Lowered threshold to catch more particles, heavily increased intensity for glowing effect */}
+          <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.5} height={1200} intensity={isDark ? 2.0 : 0.5} />
         </EffectComposer>
       </Canvas>
     </div>

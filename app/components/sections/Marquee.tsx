@@ -9,7 +9,7 @@ function wrap(min: number, max: number, v: number) {
 }
 
 export function Marquee() {
-  const baseVelocity = -2;
+  const baseVelocity = -0.5;
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);

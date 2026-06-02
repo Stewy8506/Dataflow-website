@@ -7,7 +7,7 @@
   --bg: #fefefe;
   --fg: #000000;
   --accent: #ff6b00;
-  --muted: rgba(0, 0, 0, 0.45);
+  --muted: rgba(0, 0, 0, 0.75);
   --border: rgba(0, 0, 0, 0.06);
   --surface: rgba(0, 0, 0, 0.02);
   
@@ -21,7 +21,7 @@
   --bg: #ffffff;
   --fg: #111111;
   --accent: #e65100;
-  --muted: rgba(0, 0, 0, 0.65);
+  --muted: rgba(0, 0, 0, 0.85);
   --border: rgba(0, 0, 0, 0.08);
   --surface: rgba(0, 0, 0, 0.04);
 }
@@ -31,7 +31,7 @@
   --bg: #000000;
   --fg: #fefefe;
   --accent: #ff6b00;
-  --muted: rgba(255, 255, 255, 0.65);
+  --muted: rgba(255, 255, 255, 0.85);
   --border: rgba(255, 255, 255, 0.08);
   --surface: rgba(255, 255, 255, 0.04);
 }
@@ -187,22 +187,31 @@ section {
 
 /* Nav */
 .nav {
-  position: sticky;
+  position: fixed;
   top: 24px;
-  left: 0;
-  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 10vw);
+  max-width: calc(1200px - 10vw);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px 32px;
-  z-index: 50;
+  z-index: 100;
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.05);
   border-radius: 9999px;
-  margin-bottom: 48px;
+  transition: transform 0.35s ease-in-out, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
+}
+
+.nav.is-top {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
 }
 
 .nav .brand {
@@ -444,20 +453,7 @@ section {
   padding-bottom: 0;
 }
 
-.timeline-item::before {
-  content: "";
-  position: absolute;
-  top: 16px;
-  bottom: 0;
-  left: 5px;
-  width: 2px;
-  background: var(--border);
-  z-index: 0;
-}
 
-.timeline-item:last-child::before {
-  background: linear-gradient(to bottom, var(--border) 0%, transparent 100%);
-}
 
 .timeline-line {
   position: relative;
@@ -804,6 +800,8 @@ section {
   justify-content: center;
   position: relative;
   transition: background 0.4s ease;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .hex-drop-shadow:hover .hex-wrap {
   background: var(--eco-color);

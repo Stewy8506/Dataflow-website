@@ -13,19 +13,13 @@ export function GraphPreview() {
   ];
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full">
       <svg viewBox="0 0 1000 400" role="img" aria-label="Animated dependency graph preview">
         <defs>
           <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
             <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--border)" strokeWidth="1" opacity="0.5" />
           </pattern>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="6" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
+
         </defs>
 
         <rect width="100%" height="100%" fill="url(#grid)" />
@@ -49,16 +43,16 @@ export function GraphPreview() {
         />
 
         {/* Pulses */}
-        <circle r="5" fill="var(--accent)" filter="url(#glow)">
+        <circle r="5" fill="var(--accent)">
           <animateMotion dur="2.5s" repeatCount="indefinite"><mpath href="#e1" /></animateMotion>
         </circle>
-        <circle r="5" fill="var(--accent)" filter="url(#glow)">
+        <circle r="5" fill="var(--accent)">
           <animateMotion dur="3.2s" repeatCount="indefinite" begin="1s"><mpath href="#e2" /></animateMotion>
         </circle>
-        <circle r="5" fill="#00ffcc" filter="url(#glow)">
+        <circle r="5" fill="#00ffcc">
           <animateMotion dur="2.8s" repeatCount="indefinite" begin="0.5s"><mpath href="#e3" /></animateMotion>
         </circle>
-        <circle r="5" fill="#ff4060" filter="url(#glow)">
+        <circle r="5" fill="#ff4060">
           <animateMotion dur="2.2s" repeatCount="indefinite" begin="1.5s"><mpath href="#e4" /></animateMotion>
         </circle>
 
@@ -72,7 +66,6 @@ export function GraphPreview() {
             fill="var(--bg)"
             stroke={node.color}
             strokeWidth="3"
-            filter={node.id === "Core" ? "url(#glow)" : ""}
             whileHover={{ scale: 1.3, stroke: "var(--accent)" }}
             onHoverStart={() => setHoveredNode(node.id)}
             onHoverEnd={() => setHoveredNode(null)}
@@ -81,7 +74,7 @@ export function GraphPreview() {
         ))}
         
         {/* Animated center core */}
-        <circle cx="500" cy="200" r="28" fill="transparent" stroke="var(--accent)" strokeWidth="1" filter="url(#glow)" pointerEvents="none">
+        <circle cx="500" cy="200" r="28" fill="transparent" stroke="var(--accent)" strokeWidth="1" pointerEvents="none">
           <animate attributeName="r" values="28;36;28" dur="2s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="1;0;1" dur="2s" repeatCount="indefinite" />
         </circle>

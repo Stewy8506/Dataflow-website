@@ -1,13 +1,10 @@
-"use client";
-import { useEffect } from "react";
-import { useBgStore } from "./store/bgStore";
-
+import { ClientGlobal3DBackground as Global3DBackground } from "./components/ui/ClientGlobal3DBackground";
 import { SmoothScroll } from "./components/ui/SmoothScroll";
 import { Noise } from "./components/ui/Noise";
-import { Global3DBackground } from "./components/ui/Global3DBackground";
 import { IntroLoader } from "./components/ui/IntroLoader";
 import { ScrollProgress } from "./components/ui/ScrollProgress";
 import { CustomCursor } from "./components/ui/CustomCursor";
+import { ScrollTracker } from "./components/ui/ScrollTracker";
 
 import { Navbar } from "./components/sections/Navbar";
 import { Hero } from "./components/sections/Hero";
@@ -21,33 +18,27 @@ import { Download } from "./components/sections/Download";
 import { Footer } from "./components/sections/Footer";
 
 export default function InteractiveLanding() {
-  const setActiveSection = useBgStore((state) => state.setActiveSection);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    }, { threshold: 0.2 });
-
-    const sections = document.querySelectorAll(".scroll-section");
-    sections.forEach((section) => observer.observe(section));
-
-    return () => observer.disconnect();
-  }, [setActiveSection]);
-
   return (
     <>
+      <ScrollTracker />
       <SmoothScroll />
       <Noise />
       <Global3DBackground />
+      <div 
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 1,
+          pointerEvents: "none",
+          background: "radial-gradient(circle at 50% 50%, var(--bg) 0%, transparent 70%)",
+          opacity: 0.8
+        }}
+      />
       <IntroLoader />
       <ScrollProgress />
       <CustomCursor />
 
-      <main className="site">
+      <main className="site" style={{ paddingTop: "112px" }}>
         <Navbar />
         <div id="hero" className="scroll-section"><Hero /></div>
         <div id="marquee" className="scroll-section"><Marquee /></div>

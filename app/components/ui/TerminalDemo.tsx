@@ -21,7 +21,7 @@ export function TerminalDemo() {
         </div>
       </div>
 
-      <div style={{ color: "var(--fg)", lineHeight: "1.6", whiteSpace: "pre-wrap", overflowX: "auto" }}>
+      <div style={{ color: "var(--fg)", lineHeight: "1.6", whiteSpace: "pre-wrap", overflowX: "auto", minHeight: "96px" }}>
         <span style={{ color: "var(--accent)" }}>~ </span>
         <TypeAnimation
           sequence={[
