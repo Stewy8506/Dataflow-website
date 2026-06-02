@@ -1,17 +1,29 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { cinematicRevealContainer, cinematicRevealText, fadeUp, stagger } from "../ui/animations";
 import { DOWNLOADS } from "../../data/content";
 import { MagneticButton } from "../ui/MagneticButton";
 import { usePlatform } from "../../hooks/usePlatform";
+import { Hero3D } from "../ui/Hero3D";
 
 export function Hero() {
   const platform = usePlatform();
   const primaryDownload = DOWNLOADS[platform].primary;
+  
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+
   return (
-    <section className="hero">
-      <motion.div initial="hidden" animate="visible" variants={stagger(0.1)}>
+    <section className="hero" style={{ position: "relative" }}>
+      <Hero3D />
+      <motion.div 
+        initial="hidden" 
+        animate="visible" 
+        variants={stagger(0.1)}
+        style={{ y: y1, opacity, position: "relative", zIndex: 1 }}
+      >
         <motion.h1 variants={cinematicRevealContainer}>
           <div style={{ overflow: "hidden" }}>
             <motion.span style={{ display: "block" }} variants={cinematicRevealText} className="gradient-text">DATAFLOW</motion.span>
@@ -25,7 +37,7 @@ export function Hero() {
         </motion.p>
         <motion.div className="actions" variants={fadeUp}>
           <MagneticButton>
-            <a href={primaryDownload.url} className="btn primary">
+            <a href={primaryDownload.url} className="btn primary interactive">
               Download for {platform === "mac" ? "Mac" : platform === "linux" ? "Linux" : "Windows"}
             </a>
           </MagneticButton>

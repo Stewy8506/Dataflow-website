@@ -3,6 +3,7 @@ import { Noise } from "./components/ui/Noise";
 import { NetworkBackground } from "./components/ui/NetworkBackground";
 import { IntroLoader } from "./components/ui/IntroLoader";
 import { ScrollProgress } from "./components/ui/ScrollProgress";
+import { CustomCursor } from "./components/ui/CustomCursor";
 
 import { Navbar } from "./components/sections/Navbar";
 import { Hero } from "./components/sections/Hero";
@@ -23,6 +24,7 @@ export default function InteractiveLanding() {
       <NetworkBackground />
       <IntroLoader />
       <ScrollProgress />
+      <CustomCursor />
 
       <main className="site">
         <Navbar />

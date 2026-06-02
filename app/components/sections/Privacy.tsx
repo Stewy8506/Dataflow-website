@@ -12,9 +12,16 @@ export function Privacy() {
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
     >
-      <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "40px" }}>
-        Privacy by default.
-      </motion.h2>
+      <motion.div 
+        initial={{ clipPath: "inset(100% 0 0 0)" }}
+        whileInView={{ clipPath: "inset(0% 0 0 0)" }}
+        transition={{ duration: 0.8, ease: "circOut" }}
+        viewport={{ once: true, margin: "-10%" }}
+      >
+        <h2 style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "40px" }}>
+          Privacy by default.
+        </h2>
+      </motion.div>
       <motion.div className="card-grid privacy-grid" style={{ marginTop: 0 }} variants={stagger()}>
         <motion.div className="card privacy" variants={fadeUp}>
           <ShieldCheck className="watermark" />

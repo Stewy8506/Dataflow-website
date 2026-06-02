@@ -25,7 +25,9 @@ The desktop application source lives separately at [Stewy8506/Dataflow-Visualise
 
 - **Framework** — Next.js (App Router)
 - **Language** — TypeScript
-- **Styling** — CSS
+- **Styling** — Vanilla CSS & Tailwind CSS
+- **Animations** — Framer Motion & Lenis (Smooth Scroll)
+- **3D Graphics** — React Three Fiber & Drei
 - **Hosting** — Vercel (recommended)
 
 ---

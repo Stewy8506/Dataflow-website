@@ -1,17 +1,35 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { fadeUp, stagger } from "../ui/animations";
 import { WORKFLOW_STEPS } from "../../data/content";
 
 function WorkflowTimeline() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end center"]
+  });
+
+  const scaleY = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   const dotVariants = {
     dim: { backgroundColor: "var(--border)", boxShadow: "0 0 0px transparent", scale: 1 },
-    lit: { backgroundColor: "var(--accent)", boxShadow: "0 0 16px var(--accent)", scale: 1.2 }
+    lit: { backgroundColor: "var(--accent)", boxShadow: "0 0 20px rgba(255,107,0,0.8)", scale: 1.3 }
   };
 
   return (
-    <div className="workflow-timeline">
+    <div className="workflow-timeline relative" ref={containerRef}>
+      <motion.div
+        className="absolute left-[10px] top-[24px] bottom-0 w-[2px] bg-[var(--accent)] origin-top z-0"
+        style={{ scaleY }}
+      />
       {WORKFLOW_STEPS.map((step) => (
         <motion.div
           key={step.num}
@@ -20,11 +38,11 @@ function WorkflowTimeline() {
           whileInView="lit"
           viewport={{ margin: "-45% 0px -45% 0px" }}
           variants={{
-            dim: { opacity: 0.3 },
-            lit: { opacity: 1, transition: { duration: 0.4 } }
+            dim: { opacity: 0.3, x: -20 },
+            lit: { opacity: 1, x: 0, transition: { duration: 0.6, type: "spring", bounce: 0.4 } }
           }}
         >
-          <div className="timeline-line">
+          <div className="timeline-line z-10 bg-[var(--bg)]">
             <motion.div className="timeline-dot" variants={dotVariants} />
           </div>
           <div className="timeline-content">

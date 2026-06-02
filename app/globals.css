@@ -1015,3 +1015,33 @@ section {
     font-size: clamp(40px, 15vw, 80px);
   }
 }
+
+/* Custom Cursor */
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  pointer-events: none;
+  z-index: 9999;
+  transition: width 0.2s, height 0.2s;
+}
+
+@media (pointer: fine) {
+  body, a, button, input, textarea, select, .interactive, .graph-container {
+    cursor: none !important;
+  }
+}
