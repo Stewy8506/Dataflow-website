@@ -64,13 +64,8 @@ void main() {
   float mixRatio = clamp((targetPos.y + 10.0) / 20.0, 0.0, 1.0);
   vColor = mix(uColor1, uColor2, mixRatio);
   
-  float depth = -mvPosition.z;
-  
-  // Speed boost based on scroll velocity (absolute value)
-  float speedBoost = clamp(abs(uScrollVelocity) * 0.006, 0.0, 1.0);
-  
-  // Base alpha is darker (0.1 + 0.2*random), adding speedBoost increases it dramatically
-  vAlpha = (1.0 - smoothstep(10.0, 100.0, depth)) * (0.15 + 0.2 * aRandom + speedBoost * 0.65);
+  // Fixed max opacity — no depth fade or dynamic dimming
+  vAlpha = 1.0;
 }
 `;
 

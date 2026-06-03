@@ -8,8 +8,15 @@ export function TerminalDemo() {
   return (
     <motion.div
       className="terminal-demo card"
-      style={{ padding: "16px", fontFamily: "monospace", fontSize: "14px", background: "#050505", border: "1px solid var(--border)", borderRadius: "8px", width: "100%", overflow: "hidden", marginTop: "32px", textAlign: "left" }}
+      style={{ padding: "16px", fontFamily: "monospace", fontSize: "14px", background: "#050505", border: "1px solid var(--border)", borderRadius: "8px", width: "100%", overflow: "hidden", marginTop: "32px", textAlign: "left", position: "relative" }}
     >
+      {/* CRT scanline overlay */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none", zIndex: 10,
+        backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)",
+        borderRadius: "8px",
+      }} />
+
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", borderBottom: "1px solid var(--border)", paddingBottom: "12px" }}>
         <div style={{ display: "flex", gap: "6px" }}>
           <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#ff5f56" }} />

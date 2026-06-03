@@ -7,10 +7,12 @@ import { WORKFLOW_STEPS } from "../../data/content";
 
 function WorkflowTimeline() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeStep, setActiveStep] = useState(WORKFLOW_STEPS[0].num);
   const [yCoords, setYCoords] = useState<number[]>([]);
-  
+  const [dotPos, setDotPos] = useState({ x: 0, y: 0 });
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start center", "end center"]
@@ -62,33 +64,36 @@ function WorkflowTimeline() {
     return () => observer.disconnect();
   }, []);
 
+  // Move traveling dot along path based on scroll progress
+  useEffect(() => {
+    const unsub = scrollYProgress.on("change", (v) => {
+      if (!pathRef.current) return;
+      const len = pathRef.current.getTotalLength();
+      const pt = pathRef.current.getPointAtLength(v * len);
+      setDotPos({ x: pt.x, y: pt.y });
+    });
+    return unsub;
+  }, [scrollYProgress]);
+
   // Generate the dynamic SVG path
   const generatePath = () => {
     if (yCoords.length === 0) return "";
-    
-    // Dot X positions: 6px when active (x:0), -14px when dim (x:-20)
     const getX = (stepNum: string) => activeStep === stepNum ? 6 : -14;
-    
     let firstX = getX(WORKFLOW_STEPS[0].num);
     let d = `M ${firstX} 0 L ${firstX} ${yCoords[0]}`;
-    
     for (let i = 1; i < yCoords.length; i++) {
       const prevX = getX(WORKFLOW_STEPS[i - 1].num);
       const currX = getX(WORKFLOW_STEPS[i].num);
       const prevY = yCoords[i - 1];
       const currY = yCoords[i];
-      
       const midY = (prevY + currY) / 2;
       const diffX = Math.abs(currX - prevX);
       const halfDiff = diffX / 2;
-      
       d += ` L ${prevX} ${midY - halfDiff} L ${currX} ${midY + halfDiff} L ${currX} ${currY}`;
     }
-    
     const lastX = getX(WORKFLOW_STEPS[yCoords.length - 1].num);
     const containerHeight = containerRef.current?.offsetHeight || yCoords[yCoords.length - 1] + 100;
     d += ` L ${lastX} ${containerHeight}`;
-    
     return d;
   };
 
@@ -104,27 +109,38 @@ function WorkflowTimeline() {
       <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ overflow: "visible" }}>
         {yCoords.length > 0 && (
           <>
-            <motion.path 
-              d={pathString} 
-              fill="transparent" 
-              stroke="var(--border)" 
-              strokeWidth="2" 
+            <motion.path
+              ref={pathRef}
+              d={pathString}
+              fill="transparent"
+              stroke="var(--border)"
+              strokeWidth="2"
               animate={{ d: pathString }}
               transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
             />
-            <motion.path 
-              d={pathString} 
-              fill="transparent" 
-              stroke="var(--accent)" 
-              strokeWidth="2" 
+            <motion.path
+              d={pathString}
+              fill="transparent"
+              stroke="var(--accent)"
+              strokeWidth="2"
               style={{ pathLength: scaleY }}
               animate={{ d: pathString }}
               transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
             />
+            {/* Traveling glow dot */}
+            <motion.circle
+              cx={dotPos.x}
+              cy={dotPos.y}
+              r={5}
+              fill="var(--accent)"
+              style={{
+                filter: "drop-shadow(0 0 6px var(--accent)) drop-shadow(0 0 12px var(--accent))",
+              }}
+            />
           </>
         )}
       </svg>
-      
+
       {WORKFLOW_STEPS.map((step, index) => {
         const isActive = activeStep === step.num;
         return (
@@ -143,14 +159,23 @@ function WorkflowTimeline() {
               <motion.div className="timeline-dot" variants={dotVariants} />
             </div>
             <div className="timeline-content">
-              <h4 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px", letterSpacing: "-0.02em" }}>
-                {step.title}
-              </h4>
-              <div className="timeline-meta text-muted">
-                <span className="font-mono" style={{ color: "var(--fg)" }}>STEP {step.num}</span>
-                <span style={{ margin: "0 12px", opacity: 0.5 }}>•</span>
-                <span>{step.body}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "12px" }}>
+                {/* Circular number badge */}
+                <motion.div
+                  animate={isActive
+                    ? { background: "var(--accent)", color: "#fff", scale: 1.1, boxShadow: "0 0 16px rgba(255,107,0,0.5)" }
+                    : { background: "var(--fg)", color: "var(--bg)", scale: 1, boxShadow: "none" }
+                  }
+                  transition={{ duration: 0.4 }}
+                  style={{ width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "monospace", fontSize: "16px", fontWeight: 700, flexShrink: 0 }}
+                >
+                  {step.num}
+                </motion.div>
+                <h4 style={{ fontSize: "32px", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>
+                  {step.title}
+                </h4>
               </div>
+              <p className="text-muted" style={{ fontSize: "16px", lineHeight: 1.6 }}>{step.body}</p>
             </div>
           </motion.div>
         );
@@ -158,6 +183,7 @@ function WorkflowTimeline() {
     </div>
   );
 }
+
 
 export function Workflow() {
   return (

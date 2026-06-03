@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { SpotlightCard } from "../ui/SpotlightCard";
 import { fadeUp, stagger } from "../ui/animations";
 import { FEATURES } from "../../data/content";
-
 import { GraphPreview } from "../ui/GraphPreview";
 
 export function ProductShowcase() {
@@ -78,6 +77,7 @@ export function ProductShowcase() {
         })}
       </motion.div>
 
+      <GraphPreview />
     </motion.section>
   );
 }
