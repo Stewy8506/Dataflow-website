@@ -18,20 +18,7 @@ export function Footer() {
           <span className="built-with" style={{ fontSize: "12px", color: "var(--muted)", opacity: 0.6 }}>Built with Tauri + React + Rust</span>
         </div>
 
-        {/* Final CTA */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "14px", color: "var(--muted)" }}>
-            Ready to visualise your codebase?
-          </span>
-          <a
-            href={primaryDownload.url}
-            className="btn primary"
-            style={{ padding: "10px 20px", fontSize: "14px", display: "inline-flex", alignItems: "center", gap: "6px" }}
-          >
-            <Download size={14} />
-            Download free
-          </a>
-        </div>
+
       </div>
 
       {/* Divider */}

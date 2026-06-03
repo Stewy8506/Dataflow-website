@@ -31,7 +31,7 @@ export default function InteractiveLanding() {
           zIndex: 1,
           pointerEvents: "none",
           background: "radial-gradient(circle at 50% 50%, var(--bg) 0%, transparent 70%)",
-          opacity: 0.8
+          opacity: 0.3
         }}
       />
       <IntroLoader />

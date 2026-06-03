@@ -28,12 +28,12 @@
 
 .dark {
   /* Colors - Dark Mode */
-  --bg: #000000;
+  --bg: #030303;
   --fg: #fefefe;
   --accent: #ff6b00;
-  --muted: rgba(255, 255, 255, 0.85);
-  --border: rgba(255, 255, 255, 0.08);
-  --surface: rgba(255, 255, 255, 0.04);
+  --muted: rgba(255, 255, 255, 0.7);
+  --border: rgba(255, 255, 255, 0.1);
+  --surface: rgba(255, 255, 255, 0.03);
 }
 
 * {
@@ -198,11 +198,12 @@ section {
   align-items: center;
   padding: 16px 32px;
   z-index: 100;
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1);
   transition: transform 0.35s ease-in-out, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
 }
 
@@ -222,6 +223,11 @@ section {
   display: flex;
   align-items: center;
   gap: 12px;
+  transition: text-shadow 0.3s ease;
+}
+
+.nav .brand:hover {
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
 }
 
 .nav .links {
@@ -263,9 +269,8 @@ section {
   background: linear-gradient(
     90deg,
     var(--fg) 0%,
-    #ff6b00 25%,
-    #ffa040 50%,
-    #ff4060 75%,
+    #ff6b00 30%,
+    #00f0ff 70%,
     var(--fg) 100%
   );
   background-size: 200% 100%;
@@ -348,9 +353,10 @@ section {
 
 .card {
   background: var(--surface);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(32px) saturate(150%);
+  -webkit-backdrop-filter: blur(32px) saturate(150%);
   border: 1px solid var(--border);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
   border-radius: 1.5rem;
   padding: 40px;
   display: flex;

@@ -78,20 +78,17 @@ function WorkflowTimeline() {
   // Generate the dynamic SVG path
   const generatePath = () => {
     if (yCoords.length === 0) return "";
-    const getX = (stepNum: string) => activeStep === stepNum ? 6 : -14;
-    let firstX = getX(WORKFLOW_STEPS[0].num);
+    const getX = () => 6; // Keep the line perfectly straight
+    let firstX = getX();
     let d = `M ${firstX} 0 L ${firstX} ${yCoords[0]}`;
     for (let i = 1; i < yCoords.length; i++) {
-      const prevX = getX(WORKFLOW_STEPS[i - 1].num);
-      const currX = getX(WORKFLOW_STEPS[i].num);
+      const prevX = getX();
+      const currX = getX();
       const prevY = yCoords[i - 1];
       const currY = yCoords[i];
-      const midY = (prevY + currY) / 2;
-      const diffX = Math.abs(currX - prevX);
-      const halfDiff = diffX / 2;
-      d += ` L ${prevX} ${midY - halfDiff} L ${currX} ${midY + halfDiff} L ${currX} ${currY}`;
+      d += ` L ${currX} ${currY}`;
     }
-    const lastX = getX(WORKFLOW_STEPS[yCoords.length - 1].num);
+    const lastX = getX();
     const containerHeight = containerRef.current?.offsetHeight || yCoords[yCoords.length - 1] + 100;
     d += ` L ${lastX} ${containerHeight}`;
     return d;
@@ -151,31 +148,57 @@ function WorkflowTimeline() {
             initial={false}
             animate={isActive ? "lit" : "dim"}
             variants={{
-              dim: { opacity: 0.3, x: -20 },
-              lit: { opacity: 1, x: 0, transition: { duration: 0.6, type: "spring", bounce: 0.4 } }
+              dim: { y: 0 },
+              lit: { y: 0, transition: { duration: 0.6, type: "spring", bounce: 0.4 } }
             }}
           >
             <div className="timeline-line z-10 bg-[var(--bg)]">
               <motion.div className="timeline-dot" variants={dotVariants} />
             </div>
             <div className="timeline-content">
-              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "12px" }}>
-                {/* Circular number badge */}
-                <motion.div
-                  animate={isActive
-                    ? { background: "var(--accent)", color: "#fff", scale: 1.1, boxShadow: "0 0 16px rgba(255,107,0,0.5)" }
-                    : { background: "var(--fg)", color: "var(--bg)", scale: 1, boxShadow: "none" }
-                  }
-                  transition={{ duration: 0.4 }}
-                  style={{ width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "monospace", fontSize: "16px", fontWeight: 700, flexShrink: 0 }}
+              <div style={{ 
+                background: isActive ? "var(--surface)" : "transparent", 
+                padding: "32px", 
+                borderRadius: "1.5rem", 
+                border: isActive ? "1px solid var(--border)" : "1px solid transparent",
+                backdropFilter: isActive ? "blur(24px)" : "none",
+                WebkitBackdropFilter: isActive ? "blur(24px)" : "none",
+                boxShadow: isActive ? "0 12px 40px rgba(0,0,0,0.3)" : "none",
+                transition: "all 0.4s ease"
+              }}>
+                <motion.div 
+                  variants={{
+                    dim: { opacity: 0.3 },
+                    lit: { opacity: 1 }
+                  }}
+                  style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "12px" }}
                 >
-                  {step.num}
+                  {/* Circular number badge */}
+                  <motion.div
+                    animate={isActive
+                      ? { background: "var(--accent)", color: "#fff", scale: 1.1, boxShadow: "0 0 16px rgba(255,107,0,0.5)" }
+                      : { background: "var(--fg)", color: "var(--bg)", scale: 1, boxShadow: "none" }
+                    }
+                    transition={{ duration: 0.4 }}
+                    style={{ width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "monospace", fontSize: "16px", fontWeight: 700, flexShrink: 0 }}
+                  >
+                    {step.num}
+                  </motion.div>
+                  <h4 style={{ fontSize: "32px", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>
+                    {step.title}
+                  </h4>
                 </motion.div>
-                <h4 style={{ fontSize: "32px", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>
-                  {step.title}
-                </h4>
+                <motion.p 
+                  variants={{
+                    dim: { opacity: 0.3 },
+                    lit: { opacity: 1 }
+                  }}
+                  className="text-muted" 
+                  style={{ fontSize: "16px", lineHeight: 1.6 }}
+                >
+                  {step.body}
+                </motion.p>
               </div>
-              <p className="text-muted" style={{ fontSize: "16px", lineHeight: 1.6 }}>{step.body}</p>
             </div>
           </motion.div>
         );

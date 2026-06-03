@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeToggle } from "../ui/ThemeToggle";
+import { pulseGlow } from "../ui/animations";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useBgStore } from "../../store/bgStore";
@@ -49,9 +50,16 @@ export function Navbar() {
         animate={hidden ? "hidden" : "visible"}
         transition={{ duration: 0.35, ease: "easeInOut" }}
       >
-        <a href="#" className="brand" style={{ position: "relative", zIndex: 10 }}>
+        <motion.a 
+          href="#" 
+          className="brand" 
+          style={{ position: "relative", zIndex: 10 }}
+          variants={pulseGlow}
+          initial="initial"
+          animate="animate"
+        >
           DV
-        </a>
+        </motion.a>
 
         {/* Desktop links */}
         <div className="links nav-desktop" style={{ display: "flex", gap: "24px", alignItems: "center", position: "relative" }}>

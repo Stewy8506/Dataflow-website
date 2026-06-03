@@ -51,20 +51,22 @@ export function Engine() {
             >
               <div
                 style={{
-                  padding: "16px 24px",
-                  borderRadius: "12px",
-                  border: `1px solid ${layer.color}30`,
-                  background: `${layer.color}10`,
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
+                  padding: "24px 32px",
+                  borderRadius: "16px",
+                  border: "1px solid var(--border)",
+                  borderBottom: `2px solid ${layer.color}`,
+                  background: "var(--surface)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
                   textAlign: "center",
-                  minWidth: "160px",
+                  minWidth: "220px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.2)"
                 }}
               >
-                <div style={{ fontWeight: 700, fontSize: "14px", color: layer.color, marginBottom: "4px", fontFamily: "monospace" }}>
+                <div style={{ fontWeight: 700, fontSize: "16px", color: layer.color, marginBottom: "8px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                   {layer.label}
                 </div>
-                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", lineHeight: 1.4, fontFamily: "monospace" }}>
+                <div style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.5 }}>
                   {layer.sublabel}
                 </div>
               </div>

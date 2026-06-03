@@ -8,7 +8,7 @@ import { MagneticButton } from "../ui/MagneticButton";
 import { usePlatform } from "../../hooks/usePlatform";
 import { ChevronDown } from "lucide-react";
 
-const TECH_BADGES = ["Rust", "Tauri v2", "WebGL", "oxc-parser"];
+
 
 export function Hero() {
   const platform = usePlatform();
@@ -61,37 +61,6 @@ export function Hero() {
           <span className="mono-label text-muted">V1.0.0</span>
         </motion.div>
 
-        {/* Floating tech badges */}
-        <motion.div
-          variants={fadeUp}
-          style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "40px" }}
-        >
-          {TECH_BADGES.map((badge, i) => (
-            <motion.span
-              key={badge}
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 2.5 + i * 0.4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "6px 14px",
-                fontSize: "12px",
-                fontFamily: "monospace",
-                letterSpacing: "0.08em",
-                borderRadius: "9999px",
-                border: "1px solid var(--border)",
-                background: "var(--surface)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                color: "var(--muted)",
-              }}
-            >
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--accent)", display: "inline-block", boxShadow: "0 0 6px var(--accent)" }} />
-              {badge}
-            </motion.span>
-          ))}
-        </motion.div>
       </motion.div>
 
       {/* Scroll down indicator */}
