@@ -68,9 +68,16 @@ function WorkflowTimeline() {
   useEffect(() => {
     const unsub = scrollYProgress.on("change", (v) => {
       if (!pathRef.current) return;
-      const len = pathRef.current.getTotalLength();
-      const pt = pathRef.current.getPointAtLength(v * len);
-      setDotPos({ x: pt.x, y: pt.y });
+      try {
+        const d = pathRef.current.getAttribute("d");
+        if (!d) return; // Skip if path is empty
+        const len = pathRef.current.getTotalLength();
+        if (len === 0) return;
+        const pt = pathRef.current.getPointAtLength(v * len);
+        setDotPos({ x: pt.x, y: pt.y });
+      } catch (err) {
+        // Safely catch during SVG initialization
+      }
     });
     return unsub;
   }, [scrollYProgress]);

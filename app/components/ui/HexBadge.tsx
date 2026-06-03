@@ -4,17 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IconType } from "react-icons";
 import { useState } from "react";
 
-const ECO_DESCRIPTIONS: Record<string, string> = {
-  React:   "JSX & TSX via oxc-parser",
-  Node:    "CommonJS & ESM resolution",
-  Python:  "AST via Tree-Sitter",
-  Rust:    "Cargo workspace graphs",
-  Java:    "Maven & Gradle support",
-  ".NET":  "C# & F# project trees",
-  Flutter: "Dart dependency graphs",
-};
 
-export function HexBadge({ eco }: { eco: { name: string; icon: IconType; color: string } }) {
+
+export function HexBadge({ eco }: { eco: { name: string; icon: IconType; color: string; depth?: string } }) {
   const Icon = eco.icon;
   const [hovered, setHovered] = useState(false);
 
@@ -86,7 +78,7 @@ export function HexBadge({ eco }: { eco: { name: string; icon: IconType; color: 
               boxShadow: `0 0 16px ${eco.color}25`,
             }}
           >
-            {ECO_DESCRIPTIONS[eco.name] ?? eco.name}
+            {eco.depth ?? eco.name}
             {/* Arrow */}
             <div style={{
               position: "absolute",

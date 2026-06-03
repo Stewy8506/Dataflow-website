@@ -9,10 +9,13 @@ import { ScrollTracker } from "./components/ui/ScrollTracker";
 import { Navbar } from "./components/sections/Navbar";
 import { Hero } from "./components/sections/Hero";
 import { Marquee } from "./components/sections/Marquee";
+import { AppShowcase } from "./components/sections/AppShowcase";
 import { ProductShowcase } from "./components/sections/ProductShowcase";
+import { FeatureDeep } from "./components/sections/FeatureDeep";
 import { Workflow } from "./components/sections/Workflow";
 import { Ecosystems } from "./components/sections/Ecosystems";
 import { Engine } from "./components/sections/Engine";
+import { ComparisonTable } from "./components/sections/ComparisonTable";
 import { Privacy } from "./components/sections/Privacy";
 import { Download } from "./components/sections/Download";
 import { Footer } from "./components/sections/Footer";
@@ -42,14 +45,17 @@ export default function InteractiveLanding() {
         <Navbar />
         <div id="hero" className="scroll-section"><Hero /></div>
         <div id="marquee" className="scroll-section"><Marquee /></div>
+        <div id="app-showcase" className="scroll-section"><AppShowcase /></div>
         <div id="showcase" className="scroll-section">
           <ProductShowcase />
         </div>
+        <div id="features" className="scroll-section"><FeatureDeep /></div>
         <div id="workflow" className="scroll-section">
           <Workflow />
         </div>
         <div id="ecosystems" className="scroll-section"><Ecosystems /></div>
         <div id="engine" className="scroll-section"><Engine /></div>
+        <div id="comparison" className="scroll-section"><ComparisonTable /></div>
         <div id="privacy" className="scroll-section"><Privacy /></div>
         <div id="download" className="scroll-section"><Download /></div>
         <Footer />

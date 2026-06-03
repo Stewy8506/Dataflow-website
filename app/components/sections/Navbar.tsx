@@ -6,6 +6,8 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { useBgStore } from "../../store/bgStore";
 
+import { FaGithub } from "react-icons/fa";
+
 const navLinks = [
   { name: "Workflow", id: "workflow" },
   { name: "Ecosystems", id: "ecosystems" },
@@ -94,7 +96,17 @@ export function Navbar() {
             </a>
           );
         })}
-        <div style={{ marginLeft: "12px", paddingLeft: "24px", borderLeft: "1px solid var(--border)", display: "flex", alignItems: "center" }}>
+        <div style={{ marginLeft: "12px", paddingLeft: "24px", borderLeft: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "16px" }}>
+          <a
+            href="https://github.com/Stewy8506/Repository-Visualiser"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "var(--muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--fg)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--muted)")}
+          >
+            <FaGithub size={20} />
+          </a>
           <ThemeToggle />
         </div>
       </div>

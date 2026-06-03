@@ -269,8 +269,7 @@ section {
   background: linear-gradient(
     90deg,
     var(--fg) 0%,
-    #ff6b00 30%,
-    #00f0ff 70%,
+    #ff6b00 50%,
     var(--fg) 100%
   );
   background-size: 200% 100%;

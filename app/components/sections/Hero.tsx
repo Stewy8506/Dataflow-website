@@ -58,7 +58,19 @@ export function Hero() {
               Download for {platform === "mac" ? "Mac" : platform === "linux" ? "Linux" : "Windows"}
             </a>
           </MagneticButton>
-          <span className="mono-label text-muted">V1.0.0</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <span className="mono-label text-muted">V1.0.0</span>
+            <span style={{ width: "1px", height: "14px", background: "rgba(255,255,255,0.15)" }} />
+            <a
+              href="https://github.com/Stewy8506/Repository-Visualiser"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mono-label"
+              style={{ color: "var(--muted)", fontSize: "11px", textDecoration: "none", opacity: 0.7 }}
+            >
+              MIT · Open Source
+            </a>
+          </div>
         </motion.div>
 
       </motion.div>
