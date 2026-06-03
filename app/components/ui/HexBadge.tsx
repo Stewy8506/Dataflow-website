@@ -61,24 +61,33 @@ export function HexBadge({ eco }: { eco: { name: string; icon: IconType; color: 
             transition={{ duration: 0.2 }}
             style={{
               position: "absolute",
-              bottom: "calc(100% + 10px)",
+              bottom: "calc(100% + 14px)",
               left: "50%",
               transform: "translateX(-50%)",
-              background: "rgba(0,0,0,0.85)",
+              background: "rgba(10,10,10,0.9)",
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               border: `1px solid ${eco.color}40`,
-              borderRadius: "8px",
-              padding: "8px 12px",
-              whiteSpace: "nowrap",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              width: "max-content",
+              maxWidth: "260px",
               zIndex: 100,
-              fontSize: "11px",
-              color: "rgba(255,255,255,0.8)",
-              fontFamily: "monospace",
-              boxShadow: `0 0 16px ${eco.color}25`,
+              boxShadow: `0 10px 24px -6px rgba(0,0,0,0.5), 0 0 16px ${eco.color}25`,
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              gap: "4px"
             }}
           >
-            {eco.depth ?? eco.name}
+            <span style={{ fontSize: "13px", fontWeight: 700, color: eco.color }}>
+              {eco.name}
+            </span>
+            {eco.depth && (
+              <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", lineHeight: 1.4, fontFamily: "var(--font-sans)" }}>
+                {eco.depth}
+              </span>
+            )}
             {/* Arrow */}
             <div style={{
               position: "absolute",
@@ -86,9 +95,9 @@ export function HexBadge({ eco }: { eco: { name: string; icon: IconType; color: 
               left: "50%",
               transform: "translateX(-50%)",
               width: 0, height: 0,
-              borderLeft: "5px solid transparent",
-              borderRight: "5px solid transparent",
-              borderTop: `5px solid ${eco.color}40`,
+              borderLeft: "6px solid transparent",
+              borderRight: "6px solid transparent",
+              borderTop: `6px solid ${eco.color}40`,
             }} />
           </motion.div>
         )}

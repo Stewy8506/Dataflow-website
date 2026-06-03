@@ -1,13 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, MouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeUp, stagger } from "../ui/animations";
 import { FEATURE_GROUPS } from "../../data/content";
+import { SpotlightCard } from "../ui/SpotlightCard";
 
 export function FeatureDeep() {
   const [activeGroup, setActiveGroup] = useState(FEATURE_GROUPS[0].id);
   const group = FEATURE_GROUPS.find(g => g.id === activeGroup)!;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!containerRef.current) return;
+    const cards = containerRef.current.getElementsByClassName("card");
+    for (const card of Array.from(cards)) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      (card as HTMLElement).style.setProperty("--mouse-x", `${x}px`);
+      (card as HTMLElement).style.setProperty("--mouse-y", `${y}px`);
+      
+      // Make adjacent cards glow slightly
+      const el = card.querySelector(".border-spotlight") as HTMLElement;
+      if (el) {
+        // Find distance from mouse to card center
+        const cardCenterX = rect.left + rect.width / 2;
+        const cardCenterY = rect.top + rect.height / 2;
+        const dist = Math.sqrt(Math.pow(e.clientX - cardCenterX, 2) + Math.pow(e.clientY - cardCenterY, 2));
+        if (dist < 500) {
+          el.style.opacity = "1";
+        } else {
+          el.style.opacity = "0";
+        }
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!containerRef.current) return;
+    const cards = containerRef.current.getElementsByClassName("card");
+    for (const card of Array.from(cards)) {
+      const el = card.querySelector(".border-spotlight") as HTMLElement;
+      if (el) el.style.opacity = "0";
+    }
+  };
 
   return (
     <motion.section
@@ -20,7 +57,7 @@ export function FeatureDeep() {
         variants={fadeUp}
         style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "16px" }}
       >
-        Everything you need.<br /><span className="font-light">Nothing you don't.</span>
+        Deep capabilities.
       </motion.h2>
       <motion.p
         variants={fadeUp}
@@ -77,30 +114,22 @@ export function FeatureDeep() {
             {group.subtitle}
           </p>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: "16px",
-          }}>
+          <div 
+            className="card-grid group"
+            ref={containerRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: "16px",
+            }}
+          >
             {group.features.map((feat, i) => {
               const Icon = feat.icon;
               return (
-                <motion.div
-                  key={feat.title}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05, duration: 0.3 }}
-                  style={{
-                    padding: "28px",
-                    borderRadius: "16px",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    background: "rgba(255,255,255,0.02)",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "16px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <SpotlightCard key={feat.title}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
                     <div style={{
                       width: 36,
                       height: 36,
@@ -126,7 +155,7 @@ export function FeatureDeep() {
                   }}>
                     {feat.desc}
                   </p>
-                </motion.div>
+                </SpotlightCard>
               );
             })}
           </div>

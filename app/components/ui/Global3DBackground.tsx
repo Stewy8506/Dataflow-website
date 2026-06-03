@@ -16,6 +16,8 @@ uniform float uMixShowcase;
 uniform float uMixWorkflow;
 uniform float uMixEcosystems;
 uniform float uMixEngine;
+uniform float uMixFeatures;
+uniform float uMixComparison;
 uniform float uMixPrivacy;
 uniform float uMixDownload;
 
@@ -29,6 +31,8 @@ attribute vec3 posShowcase;
 attribute vec3 posWorkflow;
 attribute vec3 posEcosystems;
 attribute vec3 posEngine;
+attribute vec3 posFeatures;
+attribute vec3 posComparison;
 attribute vec3 posPrivacy;
 attribute vec3 posDownload;
 attribute float aRandom;
@@ -93,6 +97,24 @@ void main() {
     rotEngY.y * sinE2 + rotEngY.z * cosE2
   );
 
+  // Rotate Features Cube slowly
+  float featAngle = uTime * 0.15;
+  float cosF = cos(featAngle), sinF = sin(featAngle);
+  vec3 rotatedFeatures = vec3(
+    posFeatures.x * cosF - posFeatures.z * sinF,
+    posFeatures.y,
+    posFeatures.x * sinF + posFeatures.z * cosF
+  );
+
+  // Rotate Comparison Diamond
+  float compAngle = uTime * 0.4;
+  float cosC = cos(compAngle), sinC = sin(compAngle);
+  vec3 rotatedComparison = vec3(
+    posComparison.x * cosC - posComparison.z * sinC,
+    posComparison.y,
+    posComparison.x * sinC + posComparison.z * cosC
+  );
+
   // 1. Dynamic Hero Terrain: Rolling Waves
   vec3 dynamicHero = position;
   
@@ -109,6 +131,8 @@ void main() {
                    rotatedWorkflow * uMixWorkflow + 
                    rotatedEcosystems * uMixEcosystems + 
                    rotatedEngine * uMixEngine + 
+                   rotatedFeatures * uMixFeatures +
+                   rotatedComparison * uMixComparison +
                    posPrivacy * uMixPrivacy +
                    rotatedDownload * uMixDownload;
   
@@ -191,6 +215,8 @@ function MorphingParticles() {
     const posWorkflow = new Float32Array(count * 3);
     const posEcosystems = new Float32Array(count * 3);
     const posEngine = new Float32Array(count * 3);
+    const posFeatures = new Float32Array(count * 3);
+    const posComparison = new Float32Array(count * 3);
     const posPrivacy = new Float32Array(count * 3);
     const posDownload = new Float32Array(count * 3);
     const randoms = new Float32Array(count);
@@ -285,7 +311,33 @@ function MorphingParticles() {
         posEngine[idx + 1] = pyEng;
         posEngine[idx + 2] = pzEng;
 
-        // 6. Privacy: True Classic Shield
+        // 6. Features: 3D Data Cube / Matrix
+        const cubeSide = Math.ceil(Math.cbrt(count)); // approx 13
+        const cx = i % cubeSide;
+        const cy = Math.floor(i / cubeSide) % cubeSide;
+        const cz = Math.floor(i / (cubeSide * cubeSide));
+        const spacing = 3.5;
+        posFeatures[idx] = (cx - cubeSide/2) * spacing;
+        posFeatures[idx + 1] = (cy - cubeSide/2) * spacing;
+        posFeatures[idx + 2] = (cz - cubeSide/2) * spacing;
+
+        // 7. Comparison: Premium Octahedron (Diamond)
+        const signX = Math.random() < 0.5 ? -1 : 1;
+        const signY = Math.random() < 0.5 ? -1 : 1;
+        const signZ = Math.random() < 0.5 ? -1 : 1;
+        let rx = Math.random();
+        let ry = Math.random();
+        if (rx + ry > 1) {
+            rx = 1 - rx;
+            ry = 1 - ry;
+        }
+        const rz = 1 - rx - ry;
+        const diamondRadius = 26;
+        posComparison[idx] = rx * signX * diamondRadius;
+        posComparison[idx + 1] = ry * signY * diamondRadius;
+        posComparison[idx + 2] = rz * signZ * diamondRadius;
+
+        // 8. Privacy: True Classic Shield
         const uShield = x / (gridW - 1);
         const vShield = y / (gridH - 1);
         const sx = (uShield - 0.5) * 2.0; // -1 to 1
@@ -308,7 +360,7 @@ function MorphingParticles() {
         posPrivacy[idx + 1] = pyPriv + 2.0; // Center visually above cards
         posPrivacy[idx + 2] = pzPriv;
 
-        // 7. Download: Galaxy Spiral
+        // 9. Download: Galaxy Spiral
         const rGal = Math.random() * 40;
         const arms = 3;
         const armOffset = Math.floor(Math.random() * arms) * (Math.PI * 2 / arms);
@@ -319,7 +371,7 @@ function MorphingParticles() {
       }
     }
 
-    return { posHero, posShowcase, posWorkflow, posEcosystems, posEngine, posPrivacy, posDownload, randoms, indices: new Uint16Array(indices) };
+    return { posHero, posShowcase, posWorkflow, posEcosystems, posEngine, posFeatures, posComparison, posPrivacy, posDownload, randoms, indices: new Uint16Array(indices) };
   }, []);
 
   const uniforms = useMemo(() => ({
@@ -331,6 +383,8 @@ function MorphingParticles() {
     uMixWorkflow: { value: 0.0 },
     uMixEcosystems: { value: 0.0 },
     uMixEngine: { value: 0.0 },
+    uMixFeatures: { value: 0.0 },
+    uMixComparison: { value: 0.0 },
     uMixPrivacy: { value: 0.0 },
     uMixDownload: { value: 0.0 },
     uScrollVelocity: { value: 0.0 },
@@ -346,6 +400,8 @@ function MorphingParticles() {
     uMixWorkflow: { value: 0.0 },
     uMixEcosystems: { value: 0.0 },
     uMixEngine: { value: 0.0 },
+    uMixFeatures: { value: 0.0 },
+    uMixComparison: { value: 0.0 },
     uMixPrivacy: { value: 0.0 },
     uMixDownload: { value: 0.0 },
     uScrollVelocity: { value: 0.0 },
@@ -374,11 +430,13 @@ function MorphingParticles() {
     lu.uScrollVelocity.value = smoothVelocity.get();
 
     const targetMix = {
-      hero: activeSection === "hero" || activeSection === "marquee" || activeSection === "" ? 1 : 0,
-      showcase: activeSection === "showcase" ? 1 : 0,
+      hero: ["hero", "marquee", ""].includes(activeSection) ? 1 : 0,
+      showcase: activeSection === "app-showcase" ? 1 : 0,
       workflow: activeSection === "workflow" ? 1 : 0,
       ecosystems: activeSection === "ecosystems" ? 1 : 0,
       engine: activeSection === "engine" ? 1 : 0,
+      features: activeSection === "features" ? 1 : 0,
+      comparison: activeSection === "comparison" ? 1 : 0,
       privacy: activeSection === "privacy" ? 1 : 0,
       download: activeSection === "download" ? 1 : 0,
     };
@@ -393,6 +451,8 @@ function MorphingParticles() {
     updateMix(u, "uMixWorkflow", targetMix.workflow);
     updateMix(u, "uMixEcosystems", targetMix.ecosystems);
     updateMix(u, "uMixEngine", targetMix.engine);
+    updateMix(u, "uMixFeatures", targetMix.features);
+    updateMix(u, "uMixComparison", targetMix.comparison);
     updateMix(u, "uMixPrivacy", targetMix.privacy);
     updateMix(u, "uMixDownload", targetMix.download);
 
@@ -401,6 +461,8 @@ function MorphingParticles() {
     updateMix(lu, "uMixWorkflow", targetMix.workflow);
     updateMix(lu, "uMixEcosystems", targetMix.ecosystems);
     updateMix(lu, "uMixEngine", targetMix.engine);
+    updateMix(lu, "uMixFeatures", targetMix.features);
+    updateMix(lu, "uMixComparison", targetMix.comparison);
     updateMix(lu, "uMixPrivacy", targetMix.privacy);
     updateMix(lu, "uMixDownload", targetMix.download);
 
@@ -422,6 +484,8 @@ function MorphingParticles() {
           <bufferAttribute attach="attributes-posWorkflow" count={count} array={geometryData.posWorkflow} itemSize={3} args={[geometryData.posWorkflow, 3]} />
           <bufferAttribute attach="attributes-posEcosystems" count={count} array={geometryData.posEcosystems} itemSize={3} args={[geometryData.posEcosystems, 3]} />
           <bufferAttribute attach="attributes-posEngine" count={count} array={geometryData.posEngine} itemSize={3} args={[geometryData.posEngine, 3]} />
+          <bufferAttribute attach="attributes-posFeatures" count={count} array={geometryData.posFeatures} itemSize={3} args={[geometryData.posFeatures, 3]} />
+          <bufferAttribute attach="attributes-posComparison" count={count} array={geometryData.posComparison} itemSize={3} args={[geometryData.posComparison, 3]} />
           <bufferAttribute attach="attributes-posPrivacy" count={count} array={geometryData.posPrivacy} itemSize={3} args={[geometryData.posPrivacy, 3]} />
           <bufferAttribute attach="attributes-posDownload" count={count} array={geometryData.posDownload} itemSize={3} args={[geometryData.posDownload, 3]} />
           <bufferAttribute attach="attributes-aRandom" count={count} array={geometryData.randoms} itemSize={1} args={[geometryData.randoms, 1]} />
@@ -444,6 +508,8 @@ function MorphingParticles() {
           <bufferAttribute attach="attributes-posWorkflow" count={count} array={geometryData.posWorkflow} itemSize={3} args={[geometryData.posWorkflow, 3]} />
           <bufferAttribute attach="attributes-posEcosystems" count={count} array={geometryData.posEcosystems} itemSize={3} args={[geometryData.posEcosystems, 3]} />
           <bufferAttribute attach="attributes-posEngine" count={count} array={geometryData.posEngine} itemSize={3} args={[geometryData.posEngine, 3]} />
+          <bufferAttribute attach="attributes-posFeatures" count={count} array={geometryData.posFeatures} itemSize={3} args={[geometryData.posFeatures, 3]} />
+          <bufferAttribute attach="attributes-posComparison" count={count} array={geometryData.posComparison} itemSize={3} args={[geometryData.posComparison, 3]} />
           <bufferAttribute attach="attributes-posPrivacy" count={count} array={geometryData.posPrivacy} itemSize={3} args={[geometryData.posPrivacy, 3]} />
           <bufferAttribute attach="attributes-posDownload" count={count} array={geometryData.posDownload} itemSize={3} args={[geometryData.posDownload, 3]} />
           <bufferAttribute attach="attributes-aRandom" count={count} array={geometryData.randoms} itemSize={1} args={[geometryData.randoms, 1]} />
