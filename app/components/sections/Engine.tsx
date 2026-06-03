@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../ui/animations";
 import { TerminalDemo } from "../ui/TerminalDemo";
@@ -35,59 +36,52 @@ export function Engine() {
           Dataflow Visualiser strictly separates the sandboxed UI layer from the native systems engine, communicating over a low-latency IPC bridge.
         </p>
 
-        {/* Architecture diagram */}
+        {/* Clean, Horizontal Architecture Pipeline */}
         <motion.div
           variants={fadeUp}
-          style={{ display: "flex", alignItems: "center", gap: "0", marginBottom: "48px", flexWrap: "wrap" }}
+          className="flex flex-col lg:flex-row items-stretch justify-center gap-4 lg:gap-6 mb-16 w-full max-w-5xl mx-auto"
         >
           {ARCH_LAYERS.map((layer, i) => (
-            <motion.div
-              key={layer.label}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 + i * 0.15, duration: 0.6 }}
-              style={{ display: "flex", alignItems: "center", gap: 0 }}
-            >
-              <div
+            <React.Fragment key={layer.label}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 + i * 0.15 }}
+                className="flex-1 flex flex-col items-center justify-center text-center p-8 lg:p-10 rounded-3xl relative overflow-hidden group transition-all duration-300 hover:-translate-y-2"
                 style={{
-                  padding: "24px 32px",
-                  borderRadius: "16px",
-                  border: "1px solid var(--border)",
-                  borderBottom: `2px solid ${layer.color}`,
                   background: "var(--surface)",
-                  backdropFilter: "blur(24px)",
-                  WebkitBackdropFilter: "blur(24px)",
-                  textAlign: "center",
-                  minWidth: "220px",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.2)"
+                  border: "1px solid var(--border)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.1)"
                 }}
               >
-                <div style={{ fontWeight: 700, fontSize: "16px", color: layer.color, marginBottom: "8px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                {/* Sleek top border accent */}
+                <div 
+                  className="absolute top-0 left-0 right-0 h-1 transition-all duration-300 group-hover:h-2" 
+                  style={{ background: layer.color }} 
+                />
+                
+                {/* Clean spotlight effect on hover */}
+                <div 
+                  className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none" 
+                  style={{ background: `radial-gradient(circle at top, ${layer.color}, transparent 80%)` }} 
+                />
+
+                <h3 className="text-xl lg:text-2xl font-bold mb-3 tracking-tight" style={{ color: layer.color }}>
                   {layer.label}
-                </div>
-                <div style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.5 }}>
+                </h3>
+                <p className="text-sm lg:text-base opacity-60 leading-relaxed max-w-[220px]">
                   {layer.sublabel}
-                </div>
-              </div>
+                </p>
+              </motion.div>
+
               {i < ARCH_LAYERS.length - 1 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.5 + i * 0.15 }}
-                  style={{ display: "flex", alignItems: "center", padding: "0 8px" }}
-                >
-                  <motion.div
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
-                    style={{ color: "rgba(255,255,255,0.3)" }}
-                  >
-                    <ArrowRight size={18} />
-                  </motion.div>
-                </motion.div>
+                <div className="hidden lg:flex items-center justify-center opacity-30 shrink-0">
+                  <ArrowRight size={32} />
+                </div>
               )}
-            </motion.div>
+            </React.Fragment>
           ))}
         </motion.div>
 

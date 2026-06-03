@@ -10,7 +10,6 @@ import { useScroll, useVelocity, useSpring } from "framer-motion";
 
 const vertexShader = `
 uniform float uTime;
-uniform vec2 uMouse;
 
 uniform float uMixHero;
 uniform float uMixShowcase;
@@ -18,6 +17,7 @@ uniform float uMixWorkflow;
 uniform float uMixEcosystems;
 uniform float uMixEngine;
 uniform float uMixPrivacy;
+uniform float uMixDownload;
 
 uniform vec3 uColor1;
 uniform vec3 uColor2;
@@ -30,6 +30,7 @@ attribute vec3 posWorkflow;
 attribute vec3 posEcosystems;
 attribute vec3 posEngine;
 attribute vec3 posPrivacy;
+attribute vec3 posDownload;
 attribute float aRandom;
 
 varying vec3 vColor;
@@ -46,24 +47,76 @@ void main() {
     posEcosystems.x * sinE + posEcosystems.z * cosE
   );
 
-  // Blend morph targets based on uniforms. We use 'position' as the Hero state.
-  vec3 targetPos = position * uMixHero + 
-                   posShowcase * uMixShowcase + 
-                   posWorkflow * uMixWorkflow + 
+  // Rotate Showcase layout (Data Core)
+  float showcaseAngle = uTime * 0.2;
+  float cosS = cos(showcaseAngle);
+  float sinS = sin(showcaseAngle);
+  vec3 rotatedShowcase = vec3(
+    posShowcase.x * cosS - posShowcase.z * sinS,
+    posShowcase.y,
+    posShowcase.x * sinS + posShowcase.z * cosS
+  );
+
+  // Rotate Workflow layout for continuous dynamic flowing/drilling motion
+  float workflowAngle = uTime * 0.8;
+  float cosW = cos(workflowAngle);
+  float sinW = sin(workflowAngle);
+  vec3 rotatedWorkflow = vec3(
+    posWorkflow.x * cosW - posWorkflow.z * sinW,
+    posWorkflow.y,
+    posWorkflow.x * sinW + posWorkflow.z * cosW
+  );
+
+  // Rotate Download galaxy spiral slowly
+  float galAngle = uTime * 0.3;
+  float cosG = cos(galAngle);
+  float sinG = sin(galAngle);
+  vec3 rotatedDownload = vec3(
+    posDownload.x * cosG - posDownload.z * sinG,
+    posDownload.y,
+    posDownload.x * sinG + posDownload.z * cosG
+  );
+
+  // Rotate Engine knot dynamically on multiple axes (gyroscope effect)
+  float engineAngle1 = uTime * 0.5;
+  float engineAngle2 = uTime * 0.3;
+  float cosE1 = cos(engineAngle1), sinE1 = sin(engineAngle1);
+  float cosE2 = cos(engineAngle2), sinE2 = sin(engineAngle2);
+  vec3 rotEngY = vec3(
+    posEngine.x * cosE1 - posEngine.z * sinE1,
+    posEngine.y,
+    posEngine.x * sinE1 + posEngine.z * cosE1
+  );
+  vec3 rotatedEngine = vec3(
+    rotEngY.x,
+    rotEngY.y * cosE2 - rotEngY.z * sinE2,
+    rotEngY.y * sinE2 + rotEngY.z * cosE2
+  );
+
+  // 1. Dynamic Hero Terrain: Rolling Waves
+  vec3 dynamicHero = position;
+  
+  // Smooth, gentle rolling hills without velocity surging
+  // Increased temporal displacement frequency (1.2 and 2.0) for faster undulation
+  float waveY = sin(dynamicHero.x * 0.10 + uTime * 1.2) * 1.5 + 
+                cos(dynamicHero.z * 0.10 + uTime * 2.0) * 1.5;
+                
+  dynamicHero.y = -8.0 + waveY;
+
+  // Blend morph targets smoothly
+  vec3 targetPos = dynamicHero * uMixHero + 
+                   rotatedShowcase * uMixShowcase + 
+                   rotatedWorkflow * uMixWorkflow + 
                    rotatedEcosystems * uMixEcosystems + 
-                   posEngine * uMixEngine + 
-                   posPrivacy * uMixPrivacy;
-                   
+                   rotatedEngine * uMixEngine + 
+                   posPrivacy * uMixPrivacy +
+                   rotatedDownload * uMixDownload;
+  
   // Add some universal subtle noise - floaty organic swirling
   float noiseX = sin(targetPos.y * 0.1 + uTime * 0.3);
   float noiseY = cos(targetPos.z * 0.1 + uTime * 0.3);
   float noiseZ = sin(targetPos.x * 0.1 + uTime * 0.3);
   targetPos += vec3(noiseX, noiseY, noiseZ) * 0.4;
-
-  // Add mouse repulsion (noticeable but soft)
-  float mouseDist = distance(vec2(targetPos.x, targetPos.y), vec2(uMouse.x * 30.0, -uMouse.y * 30.0));
-  float gravity = max(0.0, 5.0 - mouseDist);
-  targetPos.z += gravity * 0.8;
 
   vec4 mvPosition = modelViewMatrix * vec4(targetPos, 1.0);
   gl_Position = projectionMatrix * mvPosition;
@@ -76,8 +129,9 @@ void main() {
   float mixRatio = clamp((targetPos.y + 10.0) / 20.0, 0.0, 1.0);
   vColor = mix(uColor1, uColor2, mixRatio);
   
-  // Fixed max opacity — reduced to dim the background
-  vAlpha = 1.0;
+  // Fade out edges smoothly (only affects the massive Hero terrain)
+  float distFromCenter = length(targetPos.xz);
+  vAlpha = 1.0 - smoothstep(40.0, 110.0, distFromCenter);
 }
 `;
 
@@ -138,6 +192,7 @@ function MorphingParticles() {
     const posEcosystems = new Float32Array(count * 3);
     const posEngine = new Float32Array(count * 3);
     const posPrivacy = new Float32Array(count * 3);
+    const posDownload = new Float32Array(count * 3);
     const randoms = new Float32Array(count);
 
     const gridW = 50;
@@ -154,36 +209,41 @@ function MorphingParticles() {
         if (x < gridW - 1) indices.push(i, i + 1);
         if (y < gridH - 1) indices.push(i, i + gridW);
 
-        // 1. Hero: Flowing Terrain (formerly Showcase)
+        // 1. Hero: Flowing Terrain (Expanded Rectangular Grid)
         const xPosNorm = (x / (gridW - 1)) - 0.5;
         const yPosNorm = (y / (gridH - 1)) - 0.5;
-        const xHero = xPosNorm * 80;
-        const zHero = yPosNorm * 60;
-        const yHero = Math.sin(xHero * 0.2) * 2.0 + Math.cos(zHero * 0.2) * 2.0;
+
+        // Vastly scale up the grid to cover more screen area
+        const xHero = xPosNorm * 180.0;
+        const zHero = yPosNorm * 140.0;
+
+        // Initial wave condition matching the shader (uTime = 0)
+        const yHero = Math.sin(xHero * 0.10) * 1.5 + Math.cos(zHero * 0.10) * 1.5;
+
         posHero[idx] = xHero;
-        posHero[idx + 1] = yHero - 5.0;
+        posHero[idx + 1] = yHero - 8.0;
         posHero[idx + 2] = zHero;
 
-        // 2. Showcase: Branching Hierarchical AST
-        const depth = y / (gridH - 1); // 0 to 1
-        const radiusAST = depth * 30;
-        const heightAST = 15 - depth * 30; // root at top, branching down
-        const clusterAngle = Math.round((x / gridW) * (4 + depth * 8)) / (4 + depth * 8) * Math.PI * 2;
-        const finalAngle = clusterAngle + (Math.random() - 0.5) * 0.3;
-        posShowcase[idx] = Math.cos(finalAngle) * radiusAST + (Math.random() - 0.5) * 2;
-        posShowcase[idx + 1] = heightAST + (Math.random() - 0.5) * 2;
-        posShowcase[idx + 2] = Math.sin(finalAngle) * radiusAST + (Math.random() - 0.5) * 2;
+        // 2. Showcase: Structured Architectural Data Core
+        const lat = (y / (gridH - 1)) * Math.PI - Math.PI / 2; // -pi/2 to pi/2
+        const lon = (x / (gridW - 1)) * Math.PI * 2; // 0 to 2pi
+        // Create structured geometric rings
+        const ring = Math.floor(y / 4) % 2 === 0 ? 1 : 0.9;
+        const globeRadius = 26 * ring;
 
-        // 3. Workflow: 5 Cascading Data Clusters
-        const clusterId = Math.floor((x / gridW) * 5); // 0 to 4
-        const clusterX = (clusterId - 2) * 16;
-        const clusterY = (2 - clusterId) * 10;
-        const cRadius = 4 * Math.cbrt(Math.random());
-        const cTheta = Math.random() * Math.PI * 2;
-        const cPhi = Math.acos(2 * Math.random() - 1);
-        posWorkflow[idx] = clusterX + cRadius * Math.sin(cPhi) * Math.cos(cTheta);
-        posWorkflow[idx + 1] = clusterY + cRadius * Math.sin(cPhi) * Math.sin(cTheta);
-        posWorkflow[idx + 2] = (Math.random() - 0.5) * 8 + cRadius * Math.cos(cPhi);
+        posShowcase[idx] = Math.cos(lat) * Math.cos(lon) * globeRadius;
+        posShowcase[idx + 1] = Math.sin(lat) * globeRadius;
+        posShowcase[idx + 2] = Math.cos(lat) * Math.sin(lon) * globeRadius;
+
+        // 3. Workflow: Swirling Double Helix (Dynamic & Continuous)
+        const t = i / count;
+        const workflowY = (t - 0.5) * 120; // Spread vertically
+        const angleHelix = t * Math.PI * 12; // 6 full twists
+        const radiusHelix = 14 + Math.sin(t * Math.PI) * 4; // Bulges in the center
+        const strand = i % 2 === 0 ? 1 : -1;
+        posWorkflow[idx] = Math.cos(angleHelix) * radiusHelix * strand + (Math.random() - 0.5) * 3;
+        posWorkflow[idx + 1] = workflowY;
+        posWorkflow[idx + 2] = Math.sin(angleHelix) * radiusHelix * strand + (Math.random() - 0.5) * 3;
 
         // 4. Ecosystems: 1 Core + 4 Moons
         const moonId = i % 5;
@@ -205,69 +265,92 @@ function MorphingParticles() {
           posEcosystems[idx + 2] = Math.sin(orbitAngle) * orbitRadius + rMoon * Math.cos(pMoon);
         }
 
-        // 5. Engine: Torus Knot approximation
-        const p = 3; const q = 4;
-        const u = Math.random() * Math.PI * 2;
-        const tubeR = Math.random() * 2;
-        const knotR = 10;
-        const xKnot = (knotR + tubeR * Math.cos(q * u)) * Math.cos(p * u);
-        const yKnot = (knotR + tubeR * Math.cos(q * u)) * Math.sin(p * u);
-        const zKnot = tubeR * Math.sin(q * u);
-        posEngine[idx] = xKnot + (Math.random() - 0.5) * 3;
-        posEngine[idx + 1] = yKnot + (Math.random() - 0.5) * 3;
-        posEngine[idx + 2] = zKnot + (Math.random() - 0.5) * 3;
+        // 5. Engine: Interlocking Torus Knot (Structured Wireframe)
+        const pKnot = 3; // Number of winds around the circle
+        const qKnot = 2; // Number of winds through the hole (Trefoil knot)
+        const uNode = (x / (gridW - 1)) * Math.PI * 2;
+        const vNode = (y / (gridH - 1)) * Math.PI * 2;
 
-        // 6. Privacy: Structured Tech Shield
-        const layer = Math.floor(Math.random() * 3);
-        const scale = 1.0 - layer * 0.25;
-        let pXPos = (Math.random() - 0.5) * 2.0;
-        let yNorm = Math.random();
-        const mode = Math.random();
-        if (mode < 0.4) yNorm = Math.round(yNorm * 12) / 12;
-        else if (mode < 0.8) pXPos = Math.round(pXPos * 12) / 12;
-        const y_top = (12 + 2 * Math.cos(pXPos * Math.PI / 2)) * scale;
-        const y_bottom = (-16 + 28 * Math.pow(Math.abs(pXPos), 1.5)) * scale;
-        const px = pXPos * 20 * scale;
-        const py = y_bottom + yNorm * (y_top - y_bottom);
-        const pz = (8 - 15 * (pXPos * pXPos) - yNorm * 5) - layer * 15;
-        posPrivacy[idx] = px;
-        posPrivacy[idx + 1] = py + 2;
-        posPrivacy[idx + 2] = pz + (Math.random() - 0.5) * 1.5;
+        const knotR = 14.0;
+        const tubeR = 5.0;
+        const thickness = 2.0; // Thickness of the wireframe tube
+
+        const pathR = knotR + tubeR * Math.cos(qKnot * uNode);
+
+        const pxEng = (pathR + thickness * Math.cos(vNode)) * Math.cos(pKnot * uNode);
+        const pyEng = (pathR + thickness * Math.cos(vNode)) * Math.sin(pKnot * uNode);
+        const pzEng = tubeR * Math.sin(qKnot * uNode) + thickness * Math.sin(vNode);
+
+        posEngine[idx] = pxEng;
+        posEngine[idx + 1] = pyEng;
+        posEngine[idx + 2] = pzEng;
+
+        // 6. Privacy: True Classic Shield
+        const uShield = x / (gridW - 1);
+        const vShield = y / (gridH - 1);
+        const sx = (uShield - 0.5) * 2.0; // -1 to 1
+
+        // Classic shield width: drops vertically at the top, sweeps into a sharp bottom point
+        const widthCurve = 1.0 - Math.pow(1.0 - vShield, 2.5);
+        const shieldWidth = widthCurve * 15.0;
+
+        const pxPriv = sx * shieldWidth;
+
+        // Height: V-shaped top edge peaking in the center, straight dropping sides
+        const baseHeight = -16.0 + (vShield * 26.0); // Bottom at -16, top corners at +10
+        const peakHeight = (1.0 - Math.abs(sx)) * 6.0; // Center peak rises to +16
+        const pyPriv = baseHeight + (vShield * peakHeight);
+
+        // 3D structure: heroic sharp ridge down the center spine
+        const pzPriv = (1.0 - Math.abs(sx)) * Math.sin(vShield * Math.PI) * 4.0;
+
+        posPrivacy[idx] = pxPriv;
+        posPrivacy[idx + 1] = pyPriv + 2.0; // Center visually above cards
+        posPrivacy[idx + 2] = pzPriv;
+
+        // 7. Download: Galaxy Spiral
+        const rGal = Math.random() * 40;
+        const arms = 3;
+        const armOffset = Math.floor(Math.random() * arms) * (Math.PI * 2 / arms);
+        const thetaGal = rGal * 0.3 + armOffset + (Math.random() - 0.5) * 0.4;
+        posDownload[idx] = Math.cos(thetaGal) * rGal;
+        posDownload[idx + 1] = (Math.random() - 0.5) * 6 * (1 - rGal / 40); // flatter at the edges
+        posDownload[idx + 2] = Math.sin(thetaGal) * rGal;
       }
     }
 
-    return { posHero, posShowcase, posWorkflow, posEcosystems, posEngine, posPrivacy, randoms, indices: new Uint16Array(indices) };
+    return { posHero, posShowcase, posWorkflow, posEcosystems, posEngine, posPrivacy, posDownload, randoms, indices: new Uint16Array(indices) };
   }, []);
 
   const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uMouse: { value: new THREE.Vector2(0, 0) },
-    uColor1: { value: new THREE.Color("#ff6b00") },
-    uColor2: { value: new THREE.Color("#00f0ff") },
+    uTime: { value: 0.0 },
+    uColor1: { value: new THREE.Color(isDark ? "#ff6b00" : "#e65100") },
+    uColor2: { value: new THREE.Color(isDark ? "#00f0ff" : "#00bcd4") },
     uMixHero: { value: 1.0 },
     uMixShowcase: { value: 0.0 },
     uMixWorkflow: { value: 0.0 },
     uMixEcosystems: { value: 0.0 },
     uMixEngine: { value: 0.0 },
     uMixPrivacy: { value: 0.0 },
+    uMixDownload: { value: 0.0 },
     uScrollVelocity: { value: 0.0 },
     uOpacity: { value: 1.0 }
-  }), []);
+  }), [isDark]);
 
   const lineUniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uMouse: { value: new THREE.Vector2(0, 0) },
-    uColor1: { value: new THREE.Color("#ff6b00") },
-    uColor2: { value: new THREE.Color("#00f0ff") },
+    uTime: { value: 0.0 },
+    uColor1: { value: new THREE.Color(isDark ? "#ff6b00" : "#e65100") },
+    uColor2: { value: new THREE.Color(isDark ? "#00f0ff" : "#00bcd4") },
     uMixHero: { value: 1.0 },
     uMixShowcase: { value: 0.0 },
     uMixWorkflow: { value: 0.0 },
     uMixEcosystems: { value: 0.0 },
     uMixEngine: { value: 0.0 },
     uMixPrivacy: { value: 0.0 },
+    uMixDownload: { value: 0.0 },
     uScrollVelocity: { value: 0.0 },
     uOpacity: { value: 0.15 } // Lower opacity for interconnected lines
-  }), []);
+  }), [isDark]);
 
   useEffect(() => {
     if (materialRef.current && lineMaterialRef.current) {
@@ -287,18 +370,17 @@ function MorphingParticles() {
 
     u.uTime.value = time;
     lu.uTime.value = time;
-    u.uMouse.value.set(state.pointer.x, state.pointer.y);
-    lu.uMouse.value.set(state.pointer.x, state.pointer.y);
     u.uScrollVelocity.value = smoothVelocity.get();
     lu.uScrollVelocity.value = smoothVelocity.get();
 
     const targetMix = {
-      hero: activeSection === "hero" || activeSection === "marquee" || activeSection === "download" || activeSection === "" ? 1 : 0,
+      hero: activeSection === "hero" || activeSection === "marquee" || activeSection === "" ? 1 : 0,
       showcase: activeSection === "showcase" ? 1 : 0,
       workflow: activeSection === "workflow" ? 1 : 0,
       ecosystems: activeSection === "ecosystems" ? 1 : 0,
       engine: activeSection === "engine" ? 1 : 0,
       privacy: activeSection === "privacy" ? 1 : 0,
+      download: activeSection === "download" ? 1 : 0,
     };
 
     const rate = delta * 4.0;
@@ -312,6 +394,7 @@ function MorphingParticles() {
     updateMix(u, "uMixEcosystems", targetMix.ecosystems);
     updateMix(u, "uMixEngine", targetMix.engine);
     updateMix(u, "uMixPrivacy", targetMix.privacy);
+    updateMix(u, "uMixDownload", targetMix.download);
 
     updateMix(lu, "uMixHero", targetMix.hero);
     updateMix(lu, "uMixShowcase", targetMix.showcase);
@@ -319,6 +402,7 @@ function MorphingParticles() {
     updateMix(lu, "uMixEcosystems", targetMix.ecosystems);
     updateMix(lu, "uMixEngine", targetMix.engine);
     updateMix(lu, "uMixPrivacy", targetMix.privacy);
+    updateMix(lu, "uMixDownload", targetMix.download);
 
     // Fade out lines smoothly when not in hero section
     lu.uOpacity.value = 0.15 * lu.uMixHero.value;
@@ -339,6 +423,7 @@ function MorphingParticles() {
           <bufferAttribute attach="attributes-posEcosystems" count={count} array={geometryData.posEcosystems} itemSize={3} args={[geometryData.posEcosystems, 3]} />
           <bufferAttribute attach="attributes-posEngine" count={count} array={geometryData.posEngine} itemSize={3} args={[geometryData.posEngine, 3]} />
           <bufferAttribute attach="attributes-posPrivacy" count={count} array={geometryData.posPrivacy} itemSize={3} args={[geometryData.posPrivacy, 3]} />
+          <bufferAttribute attach="attributes-posDownload" count={count} array={geometryData.posDownload} itemSize={3} args={[geometryData.posDownload, 3]} />
           <bufferAttribute attach="attributes-aRandom" count={count} array={geometryData.randoms} itemSize={1} args={[geometryData.randoms, 1]} />
         </bufferGeometry>
         <shaderMaterial
@@ -360,6 +445,7 @@ function MorphingParticles() {
           <bufferAttribute attach="attributes-posEcosystems" count={count} array={geometryData.posEcosystems} itemSize={3} args={[geometryData.posEcosystems, 3]} />
           <bufferAttribute attach="attributes-posEngine" count={count} array={geometryData.posEngine} itemSize={3} args={[geometryData.posEngine, 3]} />
           <bufferAttribute attach="attributes-posPrivacy" count={count} array={geometryData.posPrivacy} itemSize={3} args={[geometryData.posPrivacy, 3]} />
+          <bufferAttribute attach="attributes-posDownload" count={count} array={geometryData.posDownload} itemSize={3} args={[geometryData.posDownload, 3]} />
           <bufferAttribute attach="attributes-aRandom" count={count} array={geometryData.randoms} itemSize={1} args={[geometryData.randoms, 1]} />
         </bufferGeometry>
         <shaderMaterial
