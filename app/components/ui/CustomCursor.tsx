@@ -49,7 +49,7 @@ export function CustomCursor() {
   if (!isVisible) return null;
 
   return (
-    <>
+    <div className={isHovering ? "cursor-hover-active" : ""}>
       <motion.div
         className="custom-cursor-dot"
         style={{
@@ -59,8 +59,9 @@ export function CustomCursor() {
           translateY: "-50%",
         }}
         animate={{
-          opacity: isHovering ? 0 : 1,
-          scale: isHovering ? 0 : 1
+          opacity: isHovering ? 0.5 : 1,
+          scale: isHovering ? 0.5 : 1,
+          backgroundColor: isHovering ? "#fff" : "var(--accent)"
         }}
         transition={{ duration: 0.15 }}
       />
@@ -73,14 +74,14 @@ export function CustomCursor() {
           translateY: "-50%",
         }}
         animate={{
-          width: isHovering ? 64 : 32,
-          height: isHovering ? 64 : 32,
+          width: isHovering ? 56 : 32,
+          height: isHovering ? 56 : 32,
           backgroundColor: isHovering ? "rgba(255, 107, 0, 0.1)" : "transparent",
           borderColor: isHovering ? "rgba(255, 107, 0, 0.8)" : "rgba(255, 107, 0, 0.3)",
           backdropFilter: isHovering ? "blur(4px)" : "none",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
       />
-    </>
+    </div>
   );
 }

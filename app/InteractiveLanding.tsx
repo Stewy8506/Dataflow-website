@@ -27,6 +27,18 @@ export default function InteractiveLanding() {
       <Noise />
       <Global3DBackground />
       <div 
+        className="bg-dot-grid"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 1,
+          pointerEvents: "none",
+          maskImage: "radial-gradient(circle at 50% 50%, black 0%, transparent 80%)",
+          WebkitMaskImage: "radial-gradient(circle at 50% 50%, black 0%, transparent 80%)",
+          opacity: 0.8
+        }}
+      />
+      <div 
         style={{
           position: "fixed",
           inset: 0,

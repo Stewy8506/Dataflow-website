@@ -29,23 +29,36 @@
   --surface-hover: rgba(0, 0, 0, 0.04);
   --glass-border: rgba(0, 0, 0, 0.08);
   --accent-subtle: rgba(230, 81, 0, 0.1);
-  --accent-border: rgba(230, 81, 0, 0.3);
+  --glass-border: rgba(0, 0, 0, 0.04);
+  --accent: #e65100;
+  --accent-border: rgba(230, 81, 0, 0.2);
+  --accent-subtle: rgba(230, 81, 0, 0.05);
+  --text-subtle: #475569;
+  --text-faint: #94a3b8;
+  --eco-color: rgba(0, 0, 0, 0.03);
+  
+  /* Background Textures */
+  --dot-color: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
   /* Colors - Dark Mode */
   --bg: #030303;
-  --fg: #fefefe;
+  --surface: rgba(10, 10, 10, 0.4);
+  --fg: #ffffff;
+  --muted: #a1a1aa;
+  --border: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.04);
   --accent: #ff6b00;
-  --muted: rgba(255, 255, 255, 0.7);
-  --border: rgba(255, 255, 255, 0.1);
-  --surface: rgba(255, 255, 255, 0.03);
-  --text-subtle: rgba(255, 255, 255, 0.5);
-  --text-faint: rgba(255, 255, 255, 0.35);
-  --surface-hover: rgba(255, 255, 255, 0.04);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --accent-subtle: rgba(255, 107, 0, 0.1);
-  --accent-border: rgba(255, 107, 0, 0.4);
+  --accent-border: rgba(255, 107, 0, 0.3);
+  --accent-subtle: rgba(255, 107, 0, 0.05);
+  --text-subtle: #888888;
+  --text-faint: #555555;
+  --progress: 0%;
+  --eco-color: rgba(255, 255, 255, 0.03);
+  
+  /* Background Textures */
+  --dot-color: rgba(255, 255, 255, 0.05);
 }
 
 * {
@@ -172,6 +185,12 @@ section {
 /*
   Components
 */
+
+/* Textures */
+.bg-dot-grid {
+  background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
 
 /* Noise Overlay */
 .noise-overlay {
@@ -892,24 +911,7 @@ section {
   background: var(--accent-subtle);
 }
 
-/* Scroll Progress */
-.scroll-progress-native {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent);
-  transform-origin: 0% 50%;
-  z-index: 1000;
-  animation: scroll-progress-anim linear;
-  animation-timeline: scroll();
-}
-
-@keyframes scroll-progress-anim {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
+/* Scroll Progress removed in favor of circular bottom-right indicator */
 
 .honeycomb-container {
   display: flex;
@@ -1071,6 +1073,22 @@ section {
     border-radius: 1rem;
   }
 
+  .mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .dark .mobile-menu-overlay {
+    background: rgba(3, 3, 3, 0.95);
+  }
+
   /* Hero */
   .hero {
     padding-top: 2vh;
@@ -1186,17 +1204,34 @@ section {
   border-radius: 50%;
   pointer-events: none;
   z-index: 10000;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .custom-cursor-ring {
   position: fixed;
   top: 0;
   left: 0;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 107, 0, 0.3);
+  border: 1px solid rgba(255, 107, 0, 0.4);
   pointer-events: none;
   z-index: 9999;
-  transition: width 0.2s, height 0.2s;
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+/* Hover active state */
+.cursor-hover-active .custom-cursor-dot {
+  transform: scale(0.5);
+  background: transparent;
+}
+
+.cursor-hover-active .custom-cursor-ring {
+  width: 60px;
+  height: 60px;
+  border-color: rgba(255, 107, 0, 0.8);
+  background: rgba(255, 107, 0, 0.1);
+  backdrop-filter: blur(2px);
 }
 
 @media (pointer: fine) {

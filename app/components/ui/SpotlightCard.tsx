@@ -50,18 +50,19 @@ export function SpotlightCard({ children, className = "" }: { children: React.Re
         }}
       />
       <div
-        className="border-spotlight absolute inset-0 opacity-0 transition-opacity duration-500 z-0 pointer-events-none"
+        className="border-spotlight absolute inset-0 opacity-0 transition-opacity duration-300 z-0 pointer-events-none"
         style={{
-          background: "radial-gradient(400px circle at var(--mouse-x, -100px) var(--mouse-y, -100px), var(--accent), transparent 40%)",
+          background: "radial-gradient(250px circle at var(--mouse-x, -100px) var(--mouse-y, -100px), var(--accent) 0%, transparent 80%)",
           maskImage: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           WebkitMaskComposite: "xor",
           maskComposite: "exclude",
           padding: "1px",
           borderRadius: "inherit",
-          opacity: 0.7,
+          // The opacity will be dynamically set by FeatureDeep's handleMouseMove,
+          // but we can add a base CSS transition
         }}
       />
-      <div className="relative z-10 h-full flex flex-col" style={{ transform: "translateZ(30px)" }}>
+      <div className="relative z-10 h-full flex flex-col" style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}>
         {children}
       </div>
     </motion.div>
