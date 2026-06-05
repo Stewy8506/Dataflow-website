@@ -32,6 +32,9 @@ export function Download() {
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
     >
+      <motion.span className="mono-label text-accent" variants={fadeUp} style={{ marginBottom: "16px", display: "block" }}>
+        // DOWNLOAD
+      </motion.span>
       <motion.h2 variants={fadeUp}>
         Download<br /><span className="font-light">the app.</span>
       </motion.h2>
@@ -55,14 +58,14 @@ export function Download() {
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 border: platform === p.id
-                  ? "1px solid rgba(255,107,0,0.4)"
-                  : "1px solid rgba(255,255,255,0.08)",
+                  ? "1px solid var(--accent-border)"
+                  : "1px solid var(--glass-border)",
                 background: platform === p.id
-                  ? "rgba(255,107,0,0.1)"
-                  : "rgba(255,255,255,0.03)",
+                  ? "var(--accent-subtle)"
+                  : "var(--surface)",
                 color: platform === p.id
                   ? "var(--accent)"
-                  : "rgba(255,255,255,0.5)",
+                  : "var(--text-subtle)",
               }}
             >
               <Icon size={14} />

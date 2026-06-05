@@ -17,19 +17,19 @@ export function TerminalDemo() {
         borderRadius: "8px",
       }} />
 
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", borderBottom: "1px solid var(--border)", paddingBottom: "12px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "12px" }}>
         <div style={{ display: "flex", gap: "6px" }}>
           <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#ff5f56" }} />
           <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#ffbd2e" }} />
           <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#27c93f" }} />
         </div>
-        <div style={{ color: "var(--muted)", display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", marginLeft: "16px" }}>
+        <div style={{ color: "rgba(255,255,255,0.5)", display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", marginLeft: "16px" }}>
           <Terminal size={14} /> Parser Engine PTY
         </div>
       </div>
 
-      <div style={{ color: "var(--fg)", lineHeight: "1.6", whiteSpace: "pre-wrap", overflowX: "auto", minHeight: "96px" }}>
-        <span style={{ color: "var(--accent)" }}>~ </span>
+      <div style={{ color: "#fefefe", lineHeight: "1.6", whiteSpace: "pre-wrap", overflowX: "auto", minHeight: "96px" }}>
+        <span style={{ color: "#ff6b00" }}>~ </span>
         <TypeAnimation
           sequence={[
             'dv scan ./core --blast-radius',

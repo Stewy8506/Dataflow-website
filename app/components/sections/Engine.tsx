@@ -2,10 +2,10 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { fadeUp, stagger } from "../ui/animations";
+import { fadeUp, fadeIn, stagger } from "../ui/animations";
 import { TerminalDemo } from "../ui/TerminalDemo";
 import { NumberCounter } from "../ui/NumberCounter";
-import { ChevronRight, Activity, Box, Terminal as TerminalIcon } from "lucide-react";
+import { ChevronRight, ChevronDown, Activity, Box, Terminal as TerminalIcon } from "lucide-react";
 
 const ARCH_LAYERS = [
   { id: "rust", label: "Rust Engine", sublabel: "oxc-parser · Tree-Sitter · SQLite", color: "#ef4444", icon: Box },
@@ -24,6 +24,10 @@ export function Engine() {
     >
       <motion.div className="engine-panel" variants={fadeUp}>
 
+        <motion.span className="mono-label" variants={fadeUp} style={{ marginBottom: "16px", display: "block", color: "var(--accent)" }}>
+          // ENGINE
+        </motion.span>
+
         <motion.div
           initial={{ clipPath: "inset(0 100% 0 0)" }}
           whileInView={{ clipPath: "inset(0 0% 0 0)" }}
@@ -35,51 +39,31 @@ export function Engine() {
           </h2>
         </motion.div>
 
-        <p style={{ maxWidth: "560px", fontSize: "18px", opacity: 0.7, marginBottom: "64px", lineHeight: 1.6 }}>
+        <p style={{ maxWidth: "560px", fontSize: "18px", color: "var(--muted)", opacity: 0.7, marginBottom: "64px", lineHeight: 1.6 }}>
           Dataflow Visualiser strictly separates the sandboxed UI layer from the native systems engine, communicating over a low-latency IPC bridge.
         </p>
 
-        {/* ── Tactile Blocks ── */}
-        <div style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "28px",
-          width: "100%",
-        }}>
+        {/* ── Responsive Architecture Grid ── */}
+        <div className="engine-arch-grid">
           {ARCH_LAYERS.map((layer, i) => {
             const Icon = layer.icon;
             return (
               <React.Fragment key={layer.id}>
                 <motion.div
+                  className="engine-arch-block"
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05, duration: 0.2, ease: "easeOut" }}
                   whileHover={{ x: -2, y: -2, boxShadow: `10px 10px 0px 0px ${layer.color}90, 0 0 30px ${layer.color}15` }}
                   style={{
-                    flex: 1,
-                    aspectRatio: "1 / 1",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    padding: "32px",
-                    background: "rgba(20, 20, 20, 0.4)",
-                    backdropFilter: "blur(12px)",
-                    WebkitBackdropFilter: "blur(12px)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: "24px",
                     boxShadow: `8px 8px 0px 0px ${layer.color}50`,
-                    cursor: "default",
-                    position: "relative",
-                    overflow: "hidden",
-                    transition: "box-shadow 0.3s ease",
                   }}
                 >
                   {/* Subtle top glare */}
                   <div style={{
                     position: "absolute", top: 0, left: 0, right: 0, height: "1px",
-                    background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%)",
+                    background: "linear-gradient(90deg, transparent 0%, var(--glass-border) 50%, transparent 100%)",
                   }} />
 
                   {/* Icon Badge */}
@@ -87,12 +71,12 @@ export function Engine() {
                     width: "48px",
                     height: "48px",
                     borderRadius: "14px",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(255,255,255,0.05)",
+                    background: "var(--surface)",
+                    border: "1px solid var(--glass-border)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)"
+                    boxShadow: "inset 0 1px 0 var(--glass-border)"
                   }}>
                     <Icon size={22} color={layer.color} strokeWidth={1.5} />
                   </div>
@@ -102,7 +86,7 @@ export function Engine() {
                     <h3 style={{
                       fontSize: "20px",
                       fontWeight: 600,
-                      color: "#ffffff",
+                      color: "var(--fg)",
                       letterSpacing: "-0.02em",
                       margin: "0 0 10px",
                       lineHeight: 1.2,
@@ -111,7 +95,7 @@ export function Engine() {
                     </h3>
                     <p style={{
                       fontSize: "12px",
-                      color: "rgba(255,255,255,0.45)",
+                      color: "var(--text-subtle)",
                       fontWeight: 400,
                       margin: 0,
                       lineHeight: 1.6,
@@ -124,13 +108,14 @@ export function Engine() {
                   </div>
                 </motion.div>
 
+                {/* Desktop connector (chevron between blocks) */}
                 {i < ARCH_LAYERS.length - 1 && (
-                  <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+                  <div className="engine-arch-connector" style={{ display: "none" }}>
                     <motion.div
                       animate={{ x: [0, 4, 0] }}
                       transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
                     >
-                      <ChevronRight size={24} color="rgba(255,255,255,0.15)" strokeWidth={2} />
+                      <ChevronRight size={24} color="var(--text-faint)" strokeWidth={2} />
                     </motion.div>
                   </div>
                 )}
@@ -141,18 +126,18 @@ export function Engine() {
 
         {/* ── Stats ── */}
         <div className="engine-stats" style={{ marginTop: "72px" }}>
-          <div className="engine-stat">
+          <motion.div className="engine-stat" variants={fadeIn}>
             <h4><NumberCounter to={50} suffix="x" /></h4>
             <p>Faster parsing via oxc-parser</p>
-          </div>
-          <div className="engine-stat">
+          </motion.div>
+          <motion.div className="engine-stat" variants={fadeIn}>
             <h4><NumberCounter to={100} suffix="%" /></h4>
             <p>Local execution &amp; privacy</p>
-          </div>
-          <div className="engine-stat">
+          </motion.div>
+          <motion.div className="engine-stat" variants={fadeIn}>
             <h4><NumberCounter to={2} suffix=".0" /></h4>
             <p>Tauri: Explicit boundary scopes</p>
-          </div>
+          </motion.div>
         </div>
 
         <div style={{ marginTop: "64px" }}>

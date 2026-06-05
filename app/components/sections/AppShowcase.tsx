@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { fadeUp, stagger } from "../ui/animations";
+import { fadeUp, scaleUp, stagger } from "../ui/animations";
 import { SHOWCASE_TABS } from "../../data/content";
 
 export function AppShowcase() {
@@ -17,6 +17,9 @@ export function AppShowcase() {
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
     >
+      <motion.span className="mono-label text-accent" variants={fadeUp} style={{ marginBottom: "16px", display: "block" }}>
+        // SHOWCASE
+      </motion.span>
       <motion.h2
         variants={fadeUp}
         style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "16px" }}
@@ -45,14 +48,14 @@ export function AppShowcase() {
               cursor: "pointer",
               transition: "all 0.2s ease",
               border: activeTab === tab.id
-                ? "1px solid rgba(255,107,0,0.4)"
-                : "1px solid rgba(255,255,255,0.08)",
+                ? "1px solid var(--accent-border)"
+                : "1px solid var(--glass-border)",
               background: activeTab === tab.id
-                ? "rgba(255,107,0,0.1)"
-                : "rgba(255,255,255,0.03)",
+                ? "var(--accent-subtle)"
+                : "var(--surface)",
               color: activeTab === tab.id
                 ? "var(--accent)"
-                : "rgba(255,255,255,0.5)",
+                : "var(--text-subtle)",
             }}
           >
             {tab.label}
@@ -61,15 +64,15 @@ export function AppShowcase() {
       </motion.div>
 
       {/* Screenshot frame */}
-      <motion.div variants={fadeUp}>
+      <motion.div variants={scaleUp}>
         <div style={{
           position: "relative",
           width: "100%",
           borderRadius: "20px",
-          border: "1px solid rgba(255,255,255,0.08)",
-          background: "rgba(255,255,255,0.02)",
+          border: "1px solid var(--glass-border)",
+          background: "var(--surface)",
           overflow: "hidden",
-          boxShadow: "0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+          boxShadow: "0 40px 80px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)",
         }}>
           {/* macOS-style window chrome */}
           <div style={{
@@ -77,8 +80,8 @@ export function AppShowcase() {
             alignItems: "center",
             gap: "8px",
             padding: "14px 20px",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-            background: "rgba(255,255,255,0.02)",
+            borderBottom: "1px solid var(--glass-border)",
+            background: "var(--surface)",
           }}>
             <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f57" }} />
             <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#febc2e" }} />
@@ -87,7 +90,7 @@ export function AppShowcase() {
               marginLeft: "auto",
               marginRight: "auto",
               fontSize: "11px",
-              color: "rgba(255,255,255,0.3)",
+              color: "var(--text-faint)",
               fontFamily: "monospace",
               letterSpacing: "0.05em",
             }}>
@@ -130,7 +133,7 @@ export function AppShowcase() {
             style={{
               marginTop: "20px",
               fontSize: "14px",
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--text-subtle)",
               lineHeight: 1.6,
               maxWidth: "600px",
             }}

@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { fadeUp, stagger } from "../ui/animations";
+import { fadeUp, slideInLeft, stagger } from "../ui/animations";
 import { WORKFLOW_STEPS } from "../../data/content";
 
 function WorkflowTimeline() {
@@ -224,7 +224,10 @@ export function Workflow() {
       variants={stagger()}
       style={{ maxWidth: "800px", margin: "0 auto 120px auto", padding: "0 24px" }}
     >
-      <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "64px", textAlign: "center" }}>
+      <motion.span className="mono-label text-accent" variants={fadeUp} style={{ marginBottom: "16px", display: "block", textAlign: "center" }}>
+        // WORKFLOW
+      </motion.span>
+      <motion.h2 variants={slideInLeft} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "64px", textAlign: "center" }}>
         Workflow
       </motion.h2>
 

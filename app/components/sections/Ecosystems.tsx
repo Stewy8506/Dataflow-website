@@ -14,6 +14,9 @@ export function Ecosystems() {
       variants={stagger()}
       style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
     >
+      <motion.span className="mono-label text-accent" variants={fadeUp} style={{ marginBottom: "16px", display: "block" }}>
+        // ECOSYSTEMS
+      </motion.span>
       <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "16px" }}>
         Supported ecosystems.
       </motion.h2>

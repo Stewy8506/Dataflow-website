@@ -35,22 +35,24 @@ export function Hero() {
           </div>
         </motion.h1>
 
-        {/* Typewriter tagline */}
-        <motion.p className="tagline font-light" variants={fadeUp}>
-          <TypeAnimation
-            sequence={[
-              "Index, visualize, and analyze local codebases at native speed.",
-              3000,
-              "Simulate blast-radius before you break production.",
-              3000,
-              "Refactor with AI that understands your entire dependency graph.",
-              3000,
-            ]}
-            wrapper="span"
-            speed={60}
-            repeat={Infinity}
-          />
-        </motion.p>
+        {/* Typewriter tagline in glassmorphic chip */}
+        <motion.div className="tagline-chip" variants={fadeUp} style={{ marginBottom: "48px" }}>
+          <p className="tagline font-light" style={{ marginBottom: 0 }}>
+            <TypeAnimation
+              sequence={[
+                "Index, visualize, and analyze local codebases at native speed.",
+                3000,
+                "Simulate blast-radius before you break production.",
+                3000,
+                "Refactor with AI that understands your entire dependency graph.",
+                3000,
+              ]}
+              wrapper="span"
+              speed={60}
+              repeat={Infinity}
+            />
+          </p>
+        </motion.div>
 
         <motion.div className="actions" variants={fadeUp}>
           <MagneticButton>
@@ -60,7 +62,7 @@ export function Hero() {
           </MagneticButton>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <span className="mono-label text-muted">V1.0.0</span>
-            <span style={{ width: "1px", height: "14px", background: "rgba(255,255,255,0.15)" }} />
+            <span style={{ color: "var(--text-faint)", fontSize: "11px" }}>·</span>
             <a
               href="https://github.com/Stewy8506/Repository-Visualiser"
               target="_blank"
@@ -88,11 +90,25 @@ export function Hero() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "6px",
+          gap: "8px",
           zIndex: 1,
         }}
       >
-        <span style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--muted)", opacity: 0.5, fontFamily: "monospace" }}>scroll</span>
+        {/* Gradient line above scroll indicator */}
+        <div style={{
+          width: "1px",
+          height: "32px",
+          background: "linear-gradient(to bottom, transparent, var(--accent))",
+          opacity: 0.3,
+          marginBottom: "4px",
+        }} />
+        <motion.span
+          animate={{ opacity: [0.3, 0.7, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--muted)", fontFamily: "monospace" }}
+        >
+          scroll
+        </motion.span>
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}

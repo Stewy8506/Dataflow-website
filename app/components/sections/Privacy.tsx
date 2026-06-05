@@ -12,6 +12,9 @@ export function Privacy() {
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
     >
+      <motion.span className="mono-label text-accent" variants={fadeUp} style={{ marginBottom: "16px", display: "block" }}>
+        // PRIVACY
+      </motion.span>
       <motion.div 
         initial={{ clipPath: "inset(100% 0 0 0)" }}
         whileInView={{ clipPath: "inset(0% 0 0 0)" }}

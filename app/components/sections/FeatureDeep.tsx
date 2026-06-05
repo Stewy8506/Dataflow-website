@@ -53,6 +53,9 @@ export function FeatureDeep() {
       viewport={{ once: true, margin: "-10%" }}
       variants={stagger()}
     >
+      <motion.span className="mono-label text-accent" variants={fadeUp} style={{ marginBottom: "16px", display: "block" }}>
+        // FEATURES
+      </motion.span>
       <motion.h2
         variants={fadeUp}
         style={{ fontSize: "clamp(32px, 5vw, 64px)", marginBottom: "16px" }}
@@ -81,14 +84,14 @@ export function FeatureDeep() {
               cursor: "pointer",
               transition: "all 0.2s ease",
               border: activeGroup === g.id
-                ? "1px solid rgba(255,107,0,0.4)"
-                : "1px solid rgba(255,255,255,0.08)",
+                ? "1px solid var(--accent-border)"
+                : "1px solid var(--glass-border)",
               background: activeGroup === g.id
-                ? "rgba(255,107,0,0.1)"
-                : "rgba(255,255,255,0.03)",
+                ? "var(--accent-subtle)"
+                : "var(--surface)",
               color: activeGroup === g.id
                 ? "var(--accent)"
-                : "rgba(255,255,255,0.5)",
+                : "var(--text-subtle)",
             }}
           >
             {g.title}
@@ -107,7 +110,7 @@ export function FeatureDeep() {
         >
           <p style={{
             fontSize: "15px",
-            color: "rgba(255,255,255,0.5)",
+            color: "var(--text-subtle)",
             marginBottom: "32px",
             fontStyle: "italic",
           }}>
@@ -130,26 +133,27 @@ export function FeatureDeep() {
               return (
                 <SpotlightCard key={feat.title}>
                   <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
-                    <div style={{
+                    <div className="feature-icon-badge" style={{
                       width: 36,
                       height: 36,
                       borderRadius: 10,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      background: "rgba(255,107,0,0.08)",
-                      border: "1px solid rgba(255,107,0,0.15)",
+                      background: "var(--accent-subtle)",
+                      border: "1px solid var(--accent-border)",
                       flexShrink: 0,
+                      transition: "all 0.3s ease",
                     }}>
                       <Icon size={16} color="var(--accent)" strokeWidth={2} />
                     </div>
-                    <h4 style={{ fontSize: "16px", fontWeight: 600, color: "#fff", margin: 0 }}>
+                    <h4 style={{ fontSize: "16px", fontWeight: 600, color: "var(--fg)", margin: 0 }}>
                       {feat.title}
                     </h4>
                   </div>
                   <p style={{
                     fontSize: "13px",
-                    color: "rgba(255,255,255,0.45)",
+                    color: "var(--text-subtle)",
                     lineHeight: 1.7,
                     margin: 0,
                   }}>
