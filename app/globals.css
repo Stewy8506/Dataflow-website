@@ -261,6 +261,19 @@ section {
   margin-top: 24px;
 }
 
+.nav-mobile {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .nav-desktop {
+    display: none !important;
+  }
+  .nav-mobile {
+    display: flex !important;
+  }
+}
+
 .nav .brand {
   font-size: 24px;
   font-weight: 700;
