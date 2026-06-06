@@ -1,20 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, useSpring } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { motion, useMotionValue, useSpring, useVelocity, useTransform } from "framer-motion";
 
 export function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Raw mouse coordinates
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
+  // Spring physics for smooth following and velocity calculation
+  const springConfig = { damping: 25, stiffness: 400, mass: 0.1 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+
+  // Calculate real-time velocities
+  const velX = useVelocity(cursorX);
+  const velY = useVelocity(cursorY);
+
+  const lastRotation = useRef(0);
+  const transformString = useTransform([velX, velY], ([vx, vy]: number[]) => {
+    // 1. Calculate rotation angle
+    if (Math.abs(vx) > 0.1 || Math.abs(vy) > 0.1) {
+      lastRotation.current = (Math.atan2(vy, vx) * 180) / Math.PI;
+    }
+
+    // 2. Calculate squash/stretch based on speed
+    const speed = Math.sqrt(vx * vx + vy * vy);
+    const sx = 1 + Math.min(speed / 1500, 1.5);
+    const sy = 1 - Math.min(speed / 2000, 0.5);
+
+    // 3. Return explicit CSS transform string
+    return `rotate(${lastRotation.current}deg) scaleX(${sx}) scaleY(${sy})`;
+  });
+
   useEffect(() => {
-    // Only show on non-touch devices
     if (window.matchMedia("(pointer: coarse)").matches) return;
     setIsVisible(true);
 
     const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
 
     const handleMouseOver = (e: MouseEvent) => {
@@ -25,7 +53,8 @@ export function CustomCursor() {
         target.closest("a") ||
         target.closest("button") ||
         target.closest(".interactive") ||
-        target.closest(".graph-container")
+        target.closest(".graph-container") ||
+        target.closest(".hex-wrap")
       ) {
         setIsHovering(true);
       } else {
@@ -33,55 +62,42 @@ export function CustomCursor() {
       }
     };
 
-    window.addEventListener("mousemove", updateMousePosition);
-    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mousemove", updateMousePosition, { passive: true });
+    window.addEventListener("mouseover", handleMouseOver, { passive: true });
 
     return () => {
       window.removeEventListener("mousemove", updateMousePosition);
       window.removeEventListener("mouseover", handleMouseOver);
     };
-  }, []);
-
-  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
-  const cursorX = useSpring(mousePosition.x, springConfig);
-  const cursorY = useSpring(mousePosition.y, springConfig);
+  }, [mouseX, mouseY]);
 
   if (!isVisible) return null;
 
   return (
-    <div className={isHovering ? "cursor-hover-active" : ""}>
+    <motion.div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        x: cursorX,
+        y: cursorY,
+        translateX: "-50%",
+        translateY: "-50%",
+        pointerEvents: "none",
+        zIndex: 10000,
+        mixBlendMode: "difference",
+      }}
+    >
       <motion.div
-        className="custom-cursor-dot"
-        style={{
-          x: mousePosition.x,
-          y: mousePosition.y,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
+        style={{ transform: transformString }}
         animate={{
-          opacity: isHovering ? 0.5 : 1,
-          scale: isHovering ? 0.5 : 1,
-          backgroundColor: isHovering ? "#fff" : "var(--accent)"
+          width: isHovering ? 64 : 16,
+          height: isHovering ? 64 : 16,
+          borderRadius: "50%",
+          backgroundColor: "#ffffff",
         }}
-        transition={{ duration: 0.15 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
       />
-      <motion.div
-        className="custom-cursor-ring"
-        style={{
-          x: cursorX,
-          y: cursorY,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
-        animate={{
-          width: isHovering ? 56 : 32,
-          height: isHovering ? 56 : 32,
-          backgroundColor: isHovering ? "rgba(255, 107, 0, 0.1)" : "transparent",
-          borderColor: isHovering ? "rgba(255, 107, 0, 0.8)" : "rgba(255, 107, 0, 0.3)",
-          backdropFilter: isHovering ? "blur(4px)" : "none",
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      />
-    </div>
+    </motion.div>
   );
 }
