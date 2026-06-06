@@ -18,8 +18,7 @@ const navLinks = [
 
 export function Navbar() {
   const { scrollY } = useScroll();
-  const [hidden, setHidden] = useState(false);
-  const [isTop, setIsTop] = useState(true);
+  const [navState, setNavState] = useState<"top" | "floating" | "hidden">("top");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { activeSection } = useBgStore();
   const [mounted, setMounted] = useState(false);
@@ -42,32 +41,41 @@ export function Navbar() {
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
+    
+    // Always show expanded at the very top (Hero section)
     if (latest <= 50) {
-      setIsTop(true);
-      setHidden(false);
-    } else {
-      setIsTop(false);
-      // Don't hide navbar if mobile menu is open
-      if (latest > previous && latest > 150 && !mobileMenuOpen) {
-        setHidden(true);
-      } else {
-        setHidden(false);
-      }
+      setNavState("top");
+      return;
+    }
+
+    // Don't hide navbar if mobile menu is open
+    if (mobileMenuOpen) return;
+
+    // Scrolling down -> hide
+    if (latest > previous) {
+      setNavState("hidden");
+    } 
+    // Scrolling up -> show floating pill
+    else {
+      setNavState("floating");
     }
   });
 
   return (
     <>
-      <motion.nav
-        className={`nav ${isTop ? "is-top" : ""}`}
-        variants={{
-          visible: { y: 0, x: "-50%" },
-          hidden: { y: "-150%", x: "-50%" },
-        }}
-        initial="visible"
-        animate={hidden ? "hidden" : "visible"}
-        transition={{ duration: 0.35, ease: "easeInOut" }}
-      >
+      <div className="nav-container">
+        <motion.nav
+          layout
+          className={`nav ${navState === "top" ? "is-top" : ""}`}
+          variants={{
+            top: { y: 0 },
+            floating: { y: 0 },
+            hidden: { y: "-150%" },
+          }}
+          initial="top"
+          animate={navState}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+        >
         <motion.a 
           href="#" 
           onClick={(e) => {
@@ -87,7 +95,7 @@ export function Navbar() {
         <div className="links nav-desktop" style={{ display: "flex", gap: "24px", alignItems: "center", position: "relative" }}>
           {navLinks.map((link) => {
             const currentActive = (activeSection === "hero" || !activeSection) ? "workflow" : activeSection;
-            const isActive = currentActive === link.id;
+            const isActive = navState !== "top" && currentActive === link.id;
             
             return (
               <a
@@ -231,6 +239,7 @@ export function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </>
   );
 }
