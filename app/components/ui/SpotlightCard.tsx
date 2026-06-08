@@ -23,6 +23,9 @@ export function SpotlightCard({ children, className = "" }: { children: React.Re
     const yPct = mouseY / height - 0.5;
     x.set(xPct);
     y.set(yPct);
+    
+    e.currentTarget.style.setProperty("--mouse-x", `${mouseX}px`);
+    e.currentTarget.style.setProperty("--mouse-y", `${mouseY}px`);
   };
 
   const handleMouseLeave = () => {

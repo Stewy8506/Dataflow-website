@@ -22,6 +22,8 @@ uniform float uMixPrivacy;
 uniform float uMixDownload;
 
 uniform vec2 uMouse;
+uniform vec3 uColor1;
+uniform vec3 uColor2;
 
 // Simplex noise function
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -195,14 +197,9 @@ void main() {
   if (gl_PointSize < 2.0) gl_PointSize = 2.0;
   if (gl_PointSize > 12.0) gl_PointSize = 12.0;
   
-  // Volumetric Spatial Colors
-  vec3 colorCrimson = vec3(0.9, 0.1, 0.2);
-  vec3 colorOrange = vec3(1.0, 0.4, 0.0);
-  vec3 colorPurple = vec3(0.3, 0.0, 0.5);
-  float colorMixX = sin(targetPos.x * 0.05 + uTime * 0.2) * 0.5 + 0.5;
-  float colorMixY = cos(targetPos.y * 0.05 - uTime * 0.1) * 0.5 + 0.5;
-  vec3 baseColor = mix(colorPurple, colorCrimson, colorMixX);
-  vColor = mix(baseColor, colorOrange, colorMixY);
+  // Dynamic spatial color interpolation based on theme colors
+  float colorMix = sin(targetPos.x * 0.03 + targetPos.y * 0.03 + uTime * 0.2) * 0.5 + 0.5;
+  vColor = mix(uColor1, uColor2, colorMix);
   
   // Fade out edges smoothly
   float distFromCenter = length(targetPos.xz);
@@ -212,6 +209,7 @@ void main() {
 
 const fragmentShader = `
 uniform float uOpacity;
+uniform float uIsDark;
 varying vec3 vColor;
 varying float vAlpha;
 
@@ -233,7 +231,7 @@ void main() {
   float coreRadius = mix(2.0, 8.0, focus);
   float core = pow(1.0 - (dist * 2.0), coreRadius);
   
-  vec3 finalColor = mix(vColor, vec3(1.0), core * 0.6);
+  vec3 finalColor = mix(vColor, vec3(1.0), core * 0.6 * uIsDark);
   
   float dofAlpha = mix(0.15, 1.0, focus);
   float alpha = glow * vAlpha * uOpacity * dofAlpha;
@@ -435,8 +433,8 @@ function MorphingParticles() {
 
   const uniforms = useMemo(() => ({
     uTime: { value: 0.0 },
-    uColor1: { value: new THREE.Color(isDark ? "#ff6b00" : "#e65100") },
-    uColor2: { value: new THREE.Color(isDark ? "#00f0ff" : "#00bcd4") },
+    uColor1: { value: new THREE.Color(isDark ? "#ff6b00" : "#000000") }, // Black in light mode
+    uColor2: { value: new THREE.Color(isDark ? "#00f0ff" : "#000000") }, // Black in light mode
     uMixHero: { value: 1.0 },
     uMixShowcase: { value: 0.0 },
     uMixWorkflow: { value: 0.0 },
@@ -448,13 +446,14 @@ function MorphingParticles() {
     uMixDownload: { value: 0.0 },
     uScrollVelocity: { value: 0.0 },
     uMouse: { value: new THREE.Vector2(0, 0) },
-    uOpacity: { value: 1.0 }
+    uOpacity: { value: 1.0 },
+    uIsDark: { value: isDark ? 1.0 : 0.0 }
   }), [isDark]);
 
   const lineUniforms = useMemo(() => ({
     uTime: { value: 0.0 },
-    uColor1: { value: new THREE.Color(isDark ? "#ff6b00" : "#e65100") },
-    uColor2: { value: new THREE.Color(isDark ? "#00f0ff" : "#00bcd4") },
+    uColor1: { value: new THREE.Color(isDark ? "#ff6b00" : "#000000") },
+    uColor2: { value: new THREE.Color(isDark ? "#00f0ff" : "#000000") },
     uMixHero: { value: 1.0 },
     uMixShowcase: { value: 0.0 },
     uMixWorkflow: { value: 0.0 },
@@ -466,15 +465,18 @@ function MorphingParticles() {
     uMixDownload: { value: 0.0 },
     uScrollVelocity: { value: 0.0 },
     uMouse: { value: new THREE.Vector2(0, 0) },
-    uOpacity: { value: 0.15 } // Lower opacity for interconnected lines
+    uOpacity: { value: 0.15 }, // Lower opacity for interconnected lines
+    uIsDark: { value: isDark ? 1.0 : 0.0 }
   }), [isDark]);
 
   useEffect(() => {
     if (materialRef.current && lineMaterialRef.current) {
-      materialRef.current.uniforms.uColor1.value.set(isDark ? "#ff6b00" : "#e65100");
-      materialRef.current.uniforms.uColor2.value.set(isDark ? "#00f0ff" : "#00bcd4");
-      lineMaterialRef.current.uniforms.uColor1.value.set(isDark ? "#ff6b00" : "#e65100");
-      lineMaterialRef.current.uniforms.uColor2.value.set(isDark ? "#00f0ff" : "#00bcd4");
+      materialRef.current.uniforms.uColor1.value.set(isDark ? "#ff6b00" : "#000000");
+      materialRef.current.uniforms.uColor2.value.set(isDark ? "#00f0ff" : "#000000");
+      materialRef.current.uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
+      lineMaterialRef.current.uniforms.uColor1.value.set(isDark ? "#ff6b00" : "#000000");
+      lineMaterialRef.current.uniforms.uColor2.value.set(isDark ? "#00f0ff" : "#000000");
+      lineMaterialRef.current.uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
     }
   }, [isDark]);
 
@@ -529,12 +531,20 @@ function MorphingParticles() {
     updateMix(lu, "uMixPrivacy", targetMix.privacy);
     updateMix(lu, "uMixDownload", targetMix.download);
 
-    // Fade out lines smoothly when not in hero section
-    lu.uOpacity.value = 0.15 * lu.uMixHero.value;
+    // Smooth out particle opacity for light mode normal blending
+    u.uOpacity.value = isDark ? 1.0 : 0.45;
+    lu.uOpacity.value = (isDark ? 0.15 : 0.08) * lu.uMixHero.value;
 
-    // Cinematic camera rotation (calmed down)
-    state.camera.position.x = Math.sin(state.clock.elapsedTime * 0.02) * 2;
-    state.camera.position.z = Math.cos(state.clock.elapsedTime * 0.02) * 2 + 30;
+    // Cinematic camera rotation combined with mouse parallax
+    const targetX = Math.sin(state.clock.elapsedTime * 0.02) * 2 + state.pointer.x * 4;
+    const targetY = state.pointer.y * 3;
+    const targetZ = Math.cos(state.clock.elapsedTime * 0.02) * 2 + 30;
+    
+    // Smoothly interpolate camera position for a fluid aesthetic
+    state.camera.position.x += (targetX - state.camera.position.x) * 0.05;
+    state.camera.position.y += (targetY - state.camera.position.y) * 0.05;
+    state.camera.position.z += (targetZ - state.camera.position.z) * 0.05;
+    
     state.camera.lookAt(0, 0, 0);
   });
 
@@ -560,7 +570,7 @@ function MorphingParticles() {
           uniforms={uniforms}
           transparent
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={isDark ? THREE.AdditiveBlending : THREE.NormalBlending}
         />
       </points>
       <lineSegments frustumCulled={false}>
@@ -584,7 +594,7 @@ function MorphingParticles() {
           uniforms={lineUniforms}
           transparent
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={isDark ? THREE.AdditiveBlending : THREE.NormalBlending}
         />
       </lineSegments>
     </>
@@ -600,7 +610,7 @@ export function Global3DBackground() {
         dpr={typeof window !== "undefined" ? Math.min(window.devicePixelRatio, 1.5) : 1}
         camera={{ position: [0, 0, 50], fov: 60, near: 0.1, far: 200 }}
         style={{ background: "transparent" }}
-        gl={{ antialias: false, powerPreference: "high-performance", alpha: true }}
+        gl={{ antialias: true, powerPreference: "high-performance", alpha: true }}
       >
         <ambientLight intensity={0.5} />
         <MorphingParticles />

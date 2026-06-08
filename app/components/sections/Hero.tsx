@@ -16,7 +16,7 @@ export function Hero() {
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   return (
-    <section className="hero" style={{ position: "relative", minHeight: "90vh", padding: "12vh 0 6vh" }}>
+    <section className="hero" style={{ position: "relative", minHeight: "90vh", padding: "7vh 0 6vh" }}>
       {/* CSS Keyframes for pulse flow lines */}
       <style jsx global>{`
         @keyframes dash {

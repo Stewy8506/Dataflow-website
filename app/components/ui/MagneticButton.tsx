@@ -30,11 +30,15 @@ export function MagneticButton({ children, className = "", strength = 20 }: Magn
   };
 
   return (
-    <div
+    <motion.div
       ref={ref}
       className={`inline-block ${className}`}
+      onMouseMove={handleMouse}
+      onMouseLeave={reset}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }

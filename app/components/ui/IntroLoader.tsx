@@ -27,9 +27,9 @@ export function IntroLoader() {
   return (
     <div className={`intro-loader ${done ? "done" : ""}`} aria-hidden="true">
       <div className="loader-content">
-        <h1 className="cinematic-text" style={{ "--progress": `${count}%` } as React.CSSProperties}>
+        <div className="cinematic-text" style={{ "--progress": `${count}%` } as React.CSSProperties}>
           DATAFLOW
-        </h1>
+        </div>
         <div className="counter">{String(count).padStart(3, "0")}%</div>
       </div>
     </div>

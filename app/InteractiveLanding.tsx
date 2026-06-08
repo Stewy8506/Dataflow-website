@@ -52,24 +52,12 @@ export default function InteractiveLanding() {
       <ScrollProgress />
       <CustomCursor />
 
-      <main className="site" style={{ paddingTop: "112px" }}>
+      <main className="site" style={{ paddingTop: "90px" }}>
         <Navbar />
         <div id="hero" className="scroll-section"><Hero /></div>
         <div id="marquee" className="scroll-section"><Marquee /></div>
         
         <div id="app-showcase" className="scroll-section" style={{ position: "relative", margin: "80px 0" }}>
-          <div style={{
-            position: "absolute",
-            top: "-60px", bottom: "-60px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "100vw",
-            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.02) 10%, rgba(255,255,255,0.02) 90%, transparent)",
-            borderTop: "1px solid rgba(255,255,255,0.05)",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
-            zIndex: -1,
-            pointerEvents: "none"
-          }} />
           <AppShowcase />
         </div>
         
@@ -83,35 +71,12 @@ export default function InteractiveLanding() {
         <div id="engine" className="scroll-section"><Engine /></div>
         
         <div id="comparison" className="scroll-section" style={{ position: "relative", margin: "80px 0" }}>
-          <div style={{
-            position: "absolute",
-            top: "-60px", bottom: "-60px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "100vw",
-            background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.02) 10%, rgba(255,255,255,0.02) 90%, transparent)",
-            borderTop: "1px solid rgba(255,255,255,0.05)",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
-            zIndex: -1,
-            pointerEvents: "none"
-          }} />
           <ComparisonTable />
         </div>
         
         <div id="privacy" className="scroll-section"><Privacy /></div>
         
         <div id="download" className="scroll-section" style={{ position: "relative", marginTop: "80px" }}>
-          <div style={{
-            position: "absolute",
-            top: "-80px", bottom: "-120px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "100vw",
-            background: "linear-gradient(to bottom, transparent, rgba(255,107,0,0.03) 10%, rgba(255,107,0,0.03) 90%, transparent)",
-            borderTop: "1px solid rgba(255,107,0,0.1)",
-            zIndex: -1,
-            pointerEvents: "none"
-          }} />
           <Download />
         </div>
         

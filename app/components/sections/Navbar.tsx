@@ -3,7 +3,7 @@
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { pulseGlow } from "../ui/animations";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useBgStore } from "../../store/bgStore";
 import { Menu, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
@@ -14,6 +14,7 @@ const navLinks = [
   { name: "Ecosystems", id: "ecosystems" },
   { name: "Engine", id: "engine" },
   { name: "Comparison", id: "comparison" },
+  { name: "Privacy", id: "privacy" },
   { name: "Download", id: "download" },
 ];
 
@@ -23,6 +24,9 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { activeSection } = useBgStore();
   const [mounted, setMounted] = useState(false);
+
+  const lastScrollY = useRef(0);
+  const lastDirection = useRef<"up" | "down" | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -42,7 +46,14 @@ export function Navbar() {
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
-    
+    const currentDirection = latest > previous ? "down" : "up";
+
+    // If direction changes, update the pivot point to the previous scroll position
+    if (currentDirection !== lastDirection.current) {
+      lastScrollY.current = previous;
+      lastDirection.current = currentDirection;
+    }
+
     // Always show expanded at the very top (Hero section)
     if (latest <= 50) {
       setNavState("top");
@@ -52,12 +63,14 @@ export function Navbar() {
     // Don't hide navbar if mobile menu is open
     if (mobileMenuOpen) return;
 
-    // Scrolling down -> hide
-    if (latest > previous) {
+    const diff = latest - lastScrollY.current;
+
+    // Scrolling down -> hide (after 15px scroll delta)
+    if (currentDirection === "down" && diff > 15) {
       setNavState("hidden");
     } 
-    // Scrolling up -> show floating pill
-    else {
+    // Scrolling up -> show floating pill (after 15px scroll delta)
+    else if (currentDirection === "up" && diff < -15) {
       setNavState("floating");
     }
   });
@@ -66,7 +79,6 @@ export function Navbar() {
     <>
       <div className="nav-container">
         <motion.nav
-          layout
           className={`nav ${navState === "top" ? "is-top" : ""}`}
           variants={{
             top: { y: 0 },
@@ -75,7 +87,7 @@ export function Navbar() {
           }}
           initial="top"
           animate={navState}
-          transition={{ duration: 0.35, ease: "easeInOut" }}
+          transition={{ type: "spring", stiffness: 260, damping: 28 }}
         >
         <motion.a 
           href="#" 

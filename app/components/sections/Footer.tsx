@@ -24,7 +24,7 @@ export function Footer() {
             Understand the structure before you break it.
           </p>
           <span className="built-with" style={{ fontSize: "12px", color: "var(--muted)", opacity: 0.6 }}>Built with Tauri + React + Rust</span>
-          
+
           {/* Newsletter CTA */}
           <div style={{ marginTop: "8px" }}>
             <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-subtle)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Stay updated</span>
@@ -58,10 +58,10 @@ export function Footer() {
         {/* Column 3: Social + Meta */}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-subtle)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Connect</span>
-          
+
           <div className="footer-social-links">
             <a
-              href="https://github.com/Stewy8506/Repository-Visualiser"
+              href="https://github.com/Stewy8506/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
