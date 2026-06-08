@@ -9,10 +9,11 @@ import { Menu, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 
 const navLinks = [
+  { name: "Features", id: "features" },
   { name: "Workflow", id: "workflow" },
   { name: "Ecosystems", id: "ecosystems" },
   { name: "Engine", id: "engine" },
-  { name: "Privacy", id: "privacy" },
+  { name: "Comparison", id: "comparison" },
   { name: "Download", id: "download" },
 ];
 
@@ -82,13 +83,11 @@ export function Navbar() {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className="brand" 
+          className="brand-mark interactive" 
           style={{ position: "relative", zIndex: 10 }}
-          variants={pulseGlow}
-          initial="initial"
-          animate="animate"
         >
-          DV
+          <div className="g-glyph">d</div>
+          <span className="name">dataflow</span>
         </motion.a>
 
         {/* Desktop Links */}

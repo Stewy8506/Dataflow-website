@@ -35,6 +35,14 @@ export function Download() {
       <motion.span className="mono-label text-accent" variants={fadeUp} style={{ marginBottom: "16px", display: "block" }}>
         // DOWNLOAD
       </motion.span>
+
+      {/* 100% Local Stamp */}
+      <div className="stamp-badge font-mono" style={{ top: "10px", right: "40px", transform: "rotate(-12deg)", pointerEvents: "none" }}>
+        <span className="small">processed</span>
+        <span className="big">100%</span>
+        <span className="small">locally</span>
+      </div>
+
       <motion.h2 variants={fadeUp}>
         Download<br /><span className="font-light">the app.</span>
       </motion.h2>

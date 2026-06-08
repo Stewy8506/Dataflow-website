@@ -16,7 +16,10 @@ export function Footer() {
       <div className="footer-grid">
         {/* Column 1: Brand + tagline + newsletter */}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <strong style={{ color: "var(--fg)", fontSize: "18px" }}>Dataflow Visualiser</strong>
+          <a href="#" className="brand-mark interactive" style={{ marginBottom: "4px" }}>
+            <div className="g-glyph">d</div>
+            <span className="name">dataflow</span>
+          </a>
           <p style={{ color: "var(--muted)", fontSize: "14px", lineHeight: 1.6, margin: 0, maxWidth: "300px" }}>
             Understand the structure before you break it.
           </p>

@@ -191,8 +191,9 @@ void main() {
   vDepth = -mvPosition.z;
   
   // Faux Depth of Field point sizing
-  gl_PointSize = (300.0 * aRandom + 40.0) / vDepth;
+  gl_PointSize = (120.0 * aRandom + 15.0) / vDepth;
   if (gl_PointSize < 2.0) gl_PointSize = 2.0;
+  if (gl_PointSize > 12.0) gl_PointSize = 12.0;
   
   // Volumetric Spatial Colors
   vec3 colorCrimson = vec3(0.9, 0.1, 0.2);

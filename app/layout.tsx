@@ -1,20 +1,33 @@
 import type { Metadata } from "next";
-import { Outfit, Inter } from "next/font/google";
+import { Bricolage_Grotesque, Schibsted_Grotesk, JetBrains_Mono, Caveat } from "next/font/google";
 import "./globals.css";
-
 import { ThemeProvider } from "./components/ThemeProvider";
 
-const sans = Outfit({
+const display = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-display",
+  weight: ["400", "600", "700", "800"],
   display: "swap",
 });
 
-const inter = Inter({
+const sans = Schibsted_Grotesk({
   subsets: ["latin"],
-  variable: "--font-light",
-  weight: ["300", "400"],
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500", "700"],
+  display: "swap",
+});
+
+const hand = Caveat({
+  subsets: ["latin"],
+  variable: "--font-hand",
+  weight: ["700"],
   display: "swap",
 });
 
@@ -61,7 +74,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${sans.variable} ${inter.variable}`}>
+      <body className={`${sans.variable} ${display.variable} ${mono.variable} ${hand.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
