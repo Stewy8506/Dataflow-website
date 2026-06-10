@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root, .light {
   /* Colors - Light Mode Default */
@@ -1935,3 +1933,92 @@ section {
   word-break: break-all;
   margin-top: auto;
 }
+
+/* ── Comparison Table & Responsive Honeycomb Upgrades ── */
+.comparison-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow: var(--card-shadow);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.comparison-table-wrapper:hover {
+  border-color: rgba(255, 107, 0, 0.25);
+  box-shadow: var(--card-shadow-hover);
+}
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  text-align: left;
+}
+.dashboard-table th {
+  padding: 18px 24px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-hover);
+  font-family: var(--font-mono), monospace;
+  white-space: nowrap;
+}
+.dashboard-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.dashboard-table tbody tr:hover {
+  background: var(--surface-hover);
+}
+.dashboard-table td {
+  padding: 20px 24px;
+  line-height: 1.6;
+}
+.dashboard-table tr.dataflow-highlight-row {
+  background: var(--accent-subtle) !important;
+  border-top: 1px solid var(--accent-border);
+  border-bottom: 1px solid var(--accent-border);
+  box-shadow: inset 0 0 24px rgba(255, 107, 0, 0.05);
+}
+.dashboard-table tr.dataflow-highlight-row:hover {
+  background: rgba(255, 107, 0, 0.08) !important;
+}
+
+/* Responsive ecosystems grid fallback on mobile */
+@media (max-width: 540px) {
+  .honeycomb-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 0 12px;
+    margin-top: 40px;
+  }
+  .hex-row {
+    display: contents; /* removes flex-row wrapper behavior to align children directly with grid */
+  }
+  .hex-wrap {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 0.866 !important; /* maintains layout geometry */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  .hex-drop-shadow {
+    width: 100% !important;
+  }
+  .hex-drop-shadow:hover {
+    transform: scale(1.08);
+  }
+  .eco-icon {
+    font-size: 26px !important;
+    margin-bottom: 4px !important;
+  }
+  .hex-content span {
+    font-size: 11px !important;
+  }
+}
+

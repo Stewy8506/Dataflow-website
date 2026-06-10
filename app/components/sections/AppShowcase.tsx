@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeUp, scaleUp, stagger } from "../ui/animations";
 import { SHOWCASE_TABS } from "../../data/content";
+import { GraphPreview } from "../ui/GraphPreview";
 
 export function AppShowcase() {
   const [activeTab, setActiveTab] = useState(SHOWCASE_TABS[0].id);
@@ -98,7 +99,7 @@ export function AppShowcase() {
             </span>
           </div>
 
-          {/* Image container */}
+          {/* Live canvas / Image container */}
           <AnimatePresence mode="wait">
             <motion.div
               key={active.id}
@@ -106,18 +107,23 @@ export function AppShowcase() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
+              style={{ width: "100%", height: "100%" }}
             >
-              <img
-                src={active.image}
-                alt={active.label}
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  display: "block",
-                  aspectRatio: "16 / 9",
-                  objectFit: "cover",
-                }}
-              />
+              {["graph", "blast", "trace"].includes(active.id) ? (
+                <GraphPreview mode={active.id as "graph" | "blast" | "trace"} />
+              ) : (
+                <img
+                  src={active.image}
+                  alt={active.label}
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    display: "block",
+                    aspectRatio: "16 / 9",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
