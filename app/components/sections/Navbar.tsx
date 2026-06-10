@@ -125,7 +125,9 @@ export function Navbar() {
                     style={{
                       position: "absolute", inset: 0,
                       background: "rgba(255, 255, 255, 0.08)",
-                      borderRadius: "9999px", zIndex: -1
+                      borderBottom: "2px solid var(--accent)",
+                      borderRadius: "9999px", zIndex: -1,
+                      boxShadow: "0 2px 10px rgba(255, 107, 0, 0.15)"
                     }}
                     transition={{ type: "spring", stiffness: 350, damping: 35 }}
                   />

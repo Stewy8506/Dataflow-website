@@ -2022,3 +2022,75 @@ section {
   }
 }
 
+/* Custom UI Improvements - Premium Glare, Shadows & Nebula Animations */
+.glass-top-glare {
+  position: relative;
+}
+.glass-top-glare::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes nebula-drift {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(15px, -20px) scale(1.05);
+  }
+  66% {
+    transform: translate(-10px, 15px) scale(0.97);
+  }
+}
+
+.nebula-glow {
+  filter: blur(80px);
+  animation: nebula-drift 15s ease-in-out infinite;
+  opacity: 0.15;
+}
+
+.dark .nebula-glow {
+  opacity: 0.25;
+}
+
+/* Custom premium hover cards with border glows */
+.bento-card-glow-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  pointer-events: none;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, rgba(255, 107, 0, 0.15), transparent 50%) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 10;
+}
+
+.bento-card:hover .bento-card-glow-layer {
+  opacity: 1;
+}
+
+/* Scrollbar premium custom colors */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 107, 0, 0.15);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 107, 0, 0.4);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 99px;
+}

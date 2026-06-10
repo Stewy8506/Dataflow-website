@@ -36,32 +36,44 @@ export function AppShowcase() {
       </motion.p>
 
       {/* Tab selector */}
-      <motion.div variants={fadeUp} style={{ display: "flex", gap: "8px", marginBottom: "32px" }}>
-        {SHOWCASE_TABS.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              padding: "10px 24px",
-              borderRadius: "12px",
-              fontSize: "13px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              border: activeTab === tab.id
-                ? "1px solid var(--accent-border)"
-                : "1px solid var(--glass-border)",
-              background: activeTab === tab.id
-                ? "var(--accent-subtle)"
-                : "var(--surface)",
-              color: activeTab === tab.id
-                ? "var(--accent)"
-                : "var(--text-subtle)",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <motion.div variants={fadeUp} style={{ display: "flex", gap: "6px", marginBottom: "32px", background: "rgba(255,255,255,0.02)", border: "1px solid var(--glass-border)", padding: "4px", borderRadius: "14px", width: "fit-content", flexWrap: "wrap" }}>
+        {SHOWCASE_TABS.map(tab => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                position: "relative",
+                padding: "8px 20px",
+                borderRadius: "10px",
+                fontSize: "13px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "color 0.2s ease",
+                border: "none",
+                background: "transparent",
+                color: isActive
+                  ? "var(--accent)"
+                  : "var(--text-subtle)",
+              }}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="showcase-active-tab"
+                  style={{
+                    position: "absolute", inset: 0,
+                    background: "var(--accent-subtle)",
+                    border: "1px solid var(--accent-border)",
+                    borderRadius: "10px", zIndex: -1
+                  }}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <span style={{ position: "relative", zIndex: 10 }}>{tab.label}</span>
+            </button>
+          );
+        })}
       </motion.div>
 
       {/* Screenshot frame */}

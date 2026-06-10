@@ -192,7 +192,8 @@ export function FeatureDeep() {
       <motion.div variants={fadeUp} className="bento-grid">
         
         {/* Card 1: Blast Radius (7 Columns) */}
-        <div className="bento-card span-7 flex flex-col justify-between" style={{ minHeight: "390px" }}>
+        <div className="bento-card glass-top-glare span-7 flex flex-col justify-between" style={{ minHeight: "390px" }}>
+          <div className="bento-card-glow-layer" />
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
               <div style={{ background: "rgba(255,107,0,0.1)", border: "1px solid var(--accent-border)", padding: "8px", borderRadius: "10px", color: "var(--accent)" }}>
@@ -307,7 +308,8 @@ export function FeatureDeep() {
         </div>
 
         {/* Card 2: 2D Canvas & Directory Clustering (5 Columns) */}
-        <div className="bento-card span-5 flex flex-col justify-between" style={{ minHeight: "390px" }}>
+        <div className="bento-card glass-top-glare span-5 flex flex-col justify-between" style={{ minHeight: "390px" }}>
+          <div className="bento-card-glow-layer" />
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
               <div style={{ background: "rgba(255,107,0,0.1)", border: "1px solid var(--accent-border)", padding: "8px", borderRadius: "10px", color: "var(--accent)" }}>
@@ -374,7 +376,8 @@ export function FeatureDeep() {
         </div>
 
         {/* Card 3: AI Refactor (12 Columns) */}
-        <div className="bento-card span-12 flex flex-col justify-between" style={{ minHeight: "390px" }}>
+        <div className="bento-card glass-top-glare span-12 flex flex-col justify-between" style={{ minHeight: "390px" }}>
+          <div className="bento-card-glow-layer" />
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
               <div style={{ background: "rgba(255,107,0,0.1)", border: "1px solid var(--accent-border)", padding: "8px", borderRadius: "10px", color: "var(--accent)" }}>
@@ -500,7 +503,8 @@ export function FeatureDeep() {
         </div>
 
         {/* Card 4: Churn Heatmap (4 Columns) */}
-        <div className="bento-card span-4 flex flex-col justify-between" style={{ minHeight: "340px" }}>
+        <div className="bento-card glass-top-glare span-4 flex flex-col justify-between" style={{ minHeight: "340px" }}>
+          <div className="bento-card-glow-layer" />
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
               <div style={{ background: "rgba(255,107,0,0.1)", border: "1px solid var(--accent-border)", padding: "8px", borderRadius: "10px", color: "var(--accent)" }}>
@@ -583,7 +587,8 @@ export function FeatureDeep() {
         </div>
 
         {/* Card 5: Complexity Heatmap (4 Columns) */}
-        <div className="bento-card span-4 flex flex-col justify-between" style={{ minHeight: "340px" }}>
+        <div className="bento-card glass-top-glare span-4 flex flex-col justify-between" style={{ minHeight: "340px" }}>
+          <div className="bento-card-glow-layer" />
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
               <div style={{ background: "rgba(255,107,0,0.1)", border: "1px solid var(--accent-border)", padding: "8px", borderRadius: "10px", color: "var(--accent)" }}>
@@ -638,7 +643,8 @@ export function FeatureDeep() {
         </div>
 
         {/* Card 6: Circular Dependency loops (12 Columns) */}
-        <div className="bento-card span-12" style={{ minHeight: "260px" }}>
+        <div className="bento-card glass-top-glare span-12" style={{ minHeight: "260px" }}>
+          <div className="bento-card-glow-layer" />
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }} className="md:grid-cols-2">
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>

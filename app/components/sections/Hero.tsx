@@ -5,7 +5,7 @@ import { fadeUp, stagger } from "../ui/animations";
 import { DOWNLOADS } from "../../data/content";
 import { MagneticButton } from "../ui/MagneticButton";
 import { usePlatform } from "../../hooks/usePlatform";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Cpu, Layout } from "lucide-react";
 
 export function Hero() {
   const platform = usePlatform();
@@ -28,18 +28,26 @@ export function Hero() {
           stroke-dasharray: 8, 8;
           animation: dash 1.5s linear infinite;
         }
-        @keyframes float {
+        @keyframes float1 {
+          0%, 100% { transform: translateY(0px) rotate(-0.5deg); }
+          50% { transform: translateY(-8px) rotate(0.5deg); }
+        }
+        @keyframes float2 {
+          0%, 100% { transform: translateY(0px) rotate(0.5deg); }
+          50% { transform: translateY(-12px) rotate(-1deg); }
+        }
+        @keyframes float3 {
           0%, 100% { transform: translateY(0px) rotate(-1deg); }
-          50% { transform: translateY(-6px) rotate(1deg); }
+          50% { transform: translateY(-6px) rotate(0.8deg); }
         }
         .float-badge-1 {
-          animation: float 6s ease-in-out infinite;
+          animation: float1 5.2s ease-in-out infinite;
         }
         .float-badge-2 {
-          animation: float 7s ease-in-out infinite 1s;
+          animation: float2 6.8s ease-in-out infinite;
         }
         .float-badge-3 {
-          animation: float 5s ease-in-out infinite 0.5s;
+          animation: float3 4.5s ease-in-out infinite;
         }
       `}</style>
 
@@ -140,10 +148,19 @@ export function Hero() {
             {/* SVG Connecting cables */}
             <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }}>
               <path d="M 50 80 Q 140 100, 160 170" fill="none" stroke="rgba(255, 107, 0, 0.12)" strokeWidth="1.5" />
+              <path d="M 50 80 Q 140 100, 160 170" fill="none" stroke="var(--accent)" strokeWidth="1.5" className="pulse-path" opacity="0.6" />
+              
               <path d="M 330 90 Q 260 140, 240 180" fill="none" stroke="rgba(255, 107, 0, 0.12)" strokeWidth="1.5" />
+              <path d="M 330 90 Q 260 140, 240 180" fill="none" stroke="var(--accent)" strokeWidth="1.5" className="pulse-path" opacity="0.6" />
+              
               <path d="M 80 340 Q 130 300, 180 260" fill="none" stroke="rgba(255, 107, 0, 0.12)" strokeWidth="1.5" />
+              <path d="M 80 340 Q 130 300, 180 260" fill="none" stroke="var(--accent)" strokeWidth="1.5" className="pulse-path" opacity="0.6" />
             </svg>
-
+            
+            {/* Background glowing nebulas */}
+            <div className="nebula-glow" style={{ position: "absolute", width: "120px", height: "120px", background: "var(--accent)", borderRadius: "50%", top: "40px", left: "20px", pointerEvents: "none", zIndex: 0 }} />
+            <div className="nebula-glow" style={{ position: "absolute", width: "160px", height: "160px", background: "rgba(6, 182, 212, 0.4)", borderRadius: "50%", bottom: "60px", right: "20px", pointerEvents: "none", zIndex: 0 }} />
+            
             {/* Floating Badge 1: Speed */}
             <div className="badge interactive float-badge-1" style={{ position: "absolute", top: "20px", left: "-10px", zIndex: 10 }}>
               <span className="stat-dot" style={{ background: "#00ff80", position: "absolute", top: 6, right: 6, width: 6, height: 6, borderRadius: "50%" }} />
@@ -199,7 +216,7 @@ export function Hero() {
               boxShadow: "0 30px 70px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.06)",
               overflow: "hidden",
               zIndex: 5,
-            }}>
+            }} className="glass-top-glare">
               {/* Header bar */}
               <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "12px 18px", borderBottom: "1px solid var(--glass-border)", background: "rgba(255, 255, 255, 0.01)" }}>
                 <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff5f57" }} />
@@ -222,26 +239,34 @@ export function Hero() {
                   <path d="M 180 175 Q 220 160, 250 140" fill="none" stroke="rgba(255, 107, 0, 0.15)" strokeWidth="1.5" />
                   <path d="M 180 175 Q 220 160, 250 140" fill="none" stroke="var(--accent)" strokeWidth="1.5" className="pulse-path" />
 
-                  {/* Nodes */}
-                  <g>
-                    <circle cx="60" cy="140" r="9" fill="var(--bg)" stroke="var(--accent)" strokeWidth="2.5" />
-                    <text x="60" y="123" textAnchor="middle" fill="var(--fg)" fontSize="8" fontFamily="var(--font-mono)">main.rs</text>
-                  </g>
-                  
-                  <g>
-                    <circle cx="200" cy="85" r="11" fill="var(--bg)" stroke="var(--accent)" strokeWidth="2.5" />
-                    <text x="200" y="67" textAnchor="middle" fill="var(--fg)" fontSize="8" fontFamily="var(--font-mono)">parser.rs</text>
-                  </g>
-                  
-                  <g>
-                    <circle cx="180" cy="175" r="8" fill="var(--bg)" stroke="var(--text-faint)" strokeWidth="1.5" />
-                    <text x="180" y="193" textAnchor="middle" fill="var(--text-subtle)" fontSize="8" fontFamily="var(--font-mono)">graph.rs</text>
-                  </g>
-                  
-                  <g>
-                    <circle cx="250" cy="140" r="9" fill="var(--bg)" stroke="var(--accent)" strokeWidth="2.5" />
-                    <text x="250" y="123" textAnchor="middle" fill="var(--fg)" fontSize="8" fontFamily="var(--font-mono)">ai.rs</text>
-                  </g>
+                  {/* Nodes represented as styled cards inside foreignObject */}
+                  <foreignObject x="25" y="125" width="70" height="30">
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "4px 6px", background: "#111116", border: "1px solid rgba(255,255,255,0.06)", borderLeft: "3px solid #10b981", borderRadius: "5px", height: "24px" }}>
+                      <Cpu size={9} color="#10b981" />
+                      <span style={{ fontSize: "8px", fontFamily: "var(--font-mono)", fontWeight: "bold", color: "#f5f4f0" }}>main.rs</span>
+                    </div>
+                  </foreignObject>
+
+                  <foreignObject x="165" y="70" width="75" height="30">
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "4px 6px", background: "#111116", border: "1px solid rgba(255,255,255,0.06)", borderLeft: "3px solid #10b981", borderRadius: "5px", height: "24px" }}>
+                      <Cpu size={9} color="#10b981" />
+                      <span style={{ fontSize: "8px", fontFamily: "var(--font-mono)", fontWeight: "bold", color: "#f5f4f0" }}>parser.rs</span>
+                    </div>
+                  </foreignObject>
+
+                  <foreignObject x="145" y="160" width="75" height="30">
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "4px 6px", background: "#111116", border: "1px solid rgba(255,255,255,0.06)", borderLeft: "3px solid #3b82f6", borderRadius: "5px", height: "24px" }}>
+                      <Layout size={9} color="#3b82f6" />
+                      <span style={{ fontSize: "8px", fontFamily: "var(--font-mono)", fontWeight: "bold", color: "#f5f4f0" }}>graph.tsx</span>
+                    </div>
+                  </foreignObject>
+
+                  <foreignObject x="225" y="125" width="60" height="30">
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "4px 6px", background: "#111116", border: "1px solid rgba(255,255,255,0.06)", borderLeft: "3px solid #10b981", borderRadius: "5px", height: "24px" }}>
+                      <Cpu size={9} color="#10b981" />
+                      <span style={{ fontSize: "8px", fontFamily: "var(--font-mono)", fontWeight: "bold", color: "#f5f4f0" }}>ai.rs</span>
+                    </div>
+                  </foreignObject>
                 </svg>
               </div>
             </div>

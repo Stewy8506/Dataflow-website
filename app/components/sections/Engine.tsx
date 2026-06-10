@@ -44,7 +44,7 @@ export function Engine() {
         </p>
 
         {/* ── Responsive Architecture Grid ── */}
-        <div className="engine-arch-grid">
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }} className="lg:flex-row lg:items-stretch lg:justify-between lg:gap-6">
           {ARCH_LAYERS.map((layer, i) => {
             const Icon = layer.icon;
             return (
@@ -55,9 +55,16 @@ export function Engine() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05, duration: 0.2, ease: "easeOut" }}
-                  whileHover={{ x: -2, y: -2, boxShadow: `10px 10px 0px 0px ${layer.color}90, 0 0 30px ${layer.color}15` }}
+                  whileHover={{ 
+                    x: -2, 
+                    y: -2, 
+                    boxShadow: `10px 10px 0px 0px ${layer.color}90, 0 0 30px ${layer.color}20`,
+                    borderColor: layer.color
+                  }}
                   style={{
-                    boxShadow: `8px 8px 0px 0px ${layer.color}50`,
+                    flex: 1,
+                    boxShadow: `8px 8px 0px 0px ${layer.color}30`,
+                    transition: "border-color 0.3s ease, box-shadow 0.3s ease",
                   }}
                 >
                   {/* Subtle top glare */}
@@ -76,7 +83,8 @@ export function Engine() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    boxShadow: "inset 0 1px 0 var(--glass-border)"
+                    boxShadow: "inset 0 1px 0 var(--glass-border)",
+                    marginBottom: "20px"
                   }}>
                     <Icon size={22} color={layer.color} strokeWidth={1.5} />
                   </div>
@@ -110,12 +118,12 @@ export function Engine() {
 
                 {/* Desktop connector (chevron between blocks) */}
                 {i < ARCH_LAYERS.length - 1 && (
-                  <div className="engine-arch-connector" style={{ display: "none" }}>
+                  <div className="engine-arch-connector hidden lg:flex" style={{ alignItems: "center", justifyContent: "center", alignSelf: "center" }}>
                     <motion.div
-                      animate={{ x: [0, 4, 0] }}
+                      animate={{ x: [0, 6, 0] }}
                       transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
                     >
-                      <ChevronRight size={24} color="var(--text-faint)" strokeWidth={2} />
+                      <ChevronRight size={28} color="var(--accent)" strokeWidth={2.5} style={{ opacity: 0.8 }} />
                     </motion.div>
                   </div>
                 )}
